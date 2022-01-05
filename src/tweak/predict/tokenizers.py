@@ -1,19 +1,34 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from pydantic import BaseModel
+from typing import List, Optional
 
 from transformers import AutoConfig, AutoModelForTokenClassification, AutoTokenizer
+from transformers.tokenization_utils_base import BatchEncoding
 
-from tweak.orjson_utils import orjson_dumps
+from tweak.orjson_utils import *
 
 
 class TokenizerConfig(BaseModel):
     model_path: str
     task_name: str
     checkpoint: Optional[str] = None
+    max_length: int = 128
 
     class Config:
-        json_loads = orjson.json_loads
+        json_loads = orjson.loads
         json_dumps = orjson_dumps
+
+
+class TokenizerOutput(ABC):
+    pass
+
+
+class NuggetTokenizerOutput(TokenizerOutput):
+    tokens: List[str]
+
+
+class HfAutoTokenizerOutput(TokenizerOutput):
+    encoded: BatchEncoding
 
 
 class Tokenizer(ABC):
@@ -43,9 +58,21 @@ class HFAutoTokenizer(Tokenizer):
             use_fast=True,
             add_prefix_space=False if "roberta" not in pt_model_name else True,
         )
+        self.max_length = config.max_length
     
-    def tokenize(self, texts):
-        pass
+    def tokenize(self, text_or_tokens):
+        encoded = self.tokenizer.batch_encode_plus(
+            text_or_tokens,
+            max_length=self.max_length,
+            padding="max_length",
+            truncation=True,
+            is_split_into_words=True,
+            return_tensors="pt",
+            return_offsets_mapping=True,
+            return_special_tokens_mask=True,
+        )
+        encoded['input_ids']
+        return encoded
 
 
 class TokenizersFactory:
@@ -57,4 +84,4 @@ class TokenizersFactory:
 
         if predict_tokenizer_type == 'nugget':
             return NuggetTokenizer(config)
-        return return HFAutoTokenizer(config)
+        return HFAutoTokenizer(config)

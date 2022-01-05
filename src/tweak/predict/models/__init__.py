@@ -1,11 +1,8 @@
 from abc import ABC
 from pydantic import BaseModel
-from typing import List
+from typing import List, Optional
 
-from transformers import AutoConfig, AutoModelForTokenClassification, AutoTokenizer
-
-from tweak.predict.models.hf_auto import *
-from tweak.predict.models.triton import *
+from tweak.orjson_utils import *
 
 
 class ModelConfig(BaseModel):
@@ -14,7 +11,7 @@ class ModelConfig(BaseModel):
     checkpoint: Optional[str] = None
 
     class Config:
-        json_loads = orjson.json_loads
+        json_loads = orjson.loads
         json_dumps = orjson_dumps
 
 
@@ -24,12 +21,3 @@ class ModelOutput(BaseModel):
 
 class PredictableModel(ABC):
     pass
-
-
-class ModelsForTokenClassificationFactory:
-    @classmethod
-    def create(cls, predict_model_type=str, config: str):
-        if predict_model_type == 'triton':
-            return TritonClientModelForTokenClassification()
-        
-        return HFAutoModelForTokenClassification()

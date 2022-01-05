@@ -1,9 +1,12 @@
+from transformers import AutoConfig, AutoModelForTokenClassification
+
+from tweak.predict.models import ModelConfig, ModelOutput, PredictableModel
 
 
-class HFAutoModel(Model):
+class HFAutoModel(PredictableModel):
 
-    def __init__(self, model_config: ModelConfig):
-        self.model_dir = f"{config.model_path}/{config.checkpoint}/{task_name}" if config.checkpoint else config.model_path
+    def __init__(self, config: ModelConfig):
+        self.model_dir = f"{config.model_path}/{config.checkpoint}/{config.task_name}" if config.checkpoint else config.model_path
 
         self.auto_config = AutoConfig.from_pretrained(
             self.model_dir, finetuning_task=config.task_name
@@ -18,7 +21,7 @@ class HFAutoModel(Model):
 class HFAutoModelForTokenClassification(HFAutoModel):
 
     def __init__(self, model_config: ModelConfig):
-        super(HFAutoModelForTokenClassification, self).__init__(self, model_config)
+        super().__init__(model_config)
 
         self.model = AutoModelForTokenClassification.from_pretrained(
             self.model_dir,

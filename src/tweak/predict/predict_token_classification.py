@@ -16,6 +16,7 @@ class PredictorConfig(BaseModel):
 class TokenClassificationPredictor(Predictor):
     def __init__(
         self,
+        # TODO alternate to PredictionToolbox
         predictor_config: PredictorConfig,
         max_length=32,
     ):
@@ -70,6 +71,7 @@ class TokenClassificationPredictor(Predictor):
         )
         output = self.model(input_ids=torch.tensor(encoded["input_ids"]))
 
+        # Can be alternate to another PredictionBuildForXXX(IdWithLastHidden, Normal or Legacy ...)
         pred_id_list = torch.argmax(output.logits, dim=dim_argmax)
         num_tokens = len(pred_id_list)
         if output_hidden_states is True:

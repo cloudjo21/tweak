@@ -1,6 +1,14 @@
-from transformers import AutoConfig, AutoModelForTokenClassification
+import torch
 
-from tweak.predict.models import ModelConfig, ModelOutput, PredictableModel
+from transformers import AutoConfig, AutoModelForTokenClassification
+from transformers.file_utils import ModelOutput
+from transformers.modeling_outputs import (
+    SequenceClassifierOutput,
+    TokenClassifierOutput,
+)
+from transformers.tokenization_utils_base import BatchEncoding
+
+from tweak.predict.models import ModelConfig, PredictableModel
 
 
 class HFAutoModel(PredictableModel):
@@ -29,7 +37,12 @@ class HFAutoModelForTokenClassification(HFAutoModel):
             config=self.auto_config,
         )
         self.model.eval()
+        self.detail = True
     
 
-    def infer(self) -> ModelOutput:
-        pass
+    def infer(self, encoded: BatchEncoding) -> TokenClassifierOutput:
+
+        predictions: TokenClassifierOutput = self.model(
+            input_ids=encoded["input_ids"]
+        )
+        return predictions

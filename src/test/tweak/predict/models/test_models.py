@@ -25,14 +25,21 @@ class ModelsForTokenClassificationTest(unittest.TestCase):
             task_name='',
             max_length=128
         )
-
-    def test_infer(self):
-
-
+    
+    def test_create_tokenizer(self):
         tokenizer = TokenizersFactory.create('auto', self.tok_config.json())
         assert tokenizer
 
+    def test_tokenize_of_tokenizer(self):
+        tokenizer = TokenizersFactory.create('auto', self.tok_config.json())
+        assert tokenizer
+
+    def test_infer(self):
+        tokenizer = TokenizersFactory.create('auto', self.tok_config.json())
         model = ModelsForTokenClassificationFactory.create('auto', self.config.json())
         assert model
 
-        model.infer()
+        encoded = tokenizer.tokenize([["안녕하세요", "저", "는", "김철수", "입니다", "."]])
+        out = model.infer(encoded)
+        print(out.logits.shape)
+        assert out.logits is not None

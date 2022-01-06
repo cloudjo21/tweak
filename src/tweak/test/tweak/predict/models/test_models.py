@@ -1,7 +1,7 @@
 import unittest
 
 from tunip.env import NAUTS_LOCAL_ROOT
-from tunip.path_utils import ModelPath
+from tunip.path_utils import TaskPath
 from tunip.service_config import get_service_config
 
 from tweak.predict.models import ModelConfig
@@ -15,14 +15,15 @@ class ModelsForTokenClassificationTest(unittest.TestCase):
 
     def setUp(self):
         service_config = get_service_config(force_service_level='dev')
-        model_path = ModelPath(service_config.username, 'wiki_dev', '20211020_104537_425173', 'ner', 'checkpoint-55200')
+        model_path = TaskPath(service_config.username, 'wiki_dev', '20211020_104537_425173', 'ner')
         self.config = ModelConfig(
             model_path=f"{NAUTS_LOCAL_ROOT}/{model_path}",
-            task_name=''
+            task_name="ner",
+            checkpoint="checkpoint-55200"
         )
         self.tok_config = TokenizerConfig(
             model_path=f"{NAUTS_LOCAL_ROOT}/{model_path}",
-            task_name='',
+            task_name="ner",
             max_length=128
         )
     

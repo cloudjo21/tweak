@@ -8,7 +8,7 @@ from tweak.orjson_utils import *
 class ModelConfig(BaseModel):
     model_path: str
     task_name: str
-    checkpoint: Optional[str] = None
+    checkpoint: Optional[str]
 
     class Config:
         json_loads = orjson.loads

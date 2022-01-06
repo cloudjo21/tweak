@@ -1,5 +1,6 @@
 import torch
 
+from abc import ABC
 from typing import List
 
 from transformers.modeling_outputs import (
@@ -10,7 +11,11 @@ from transformers.tokenization_utils_base import BatchEncoding
 from tunip.corpus_utils import CorpusToken
 
 
-class PredictionBuildForTokenTypeWord:
+class PredictionBuild(ABC):
+    pass
+
+
+class PredictionBuildForTokenTypeWord(PredictionBuild):
 
     def __call__(
         self,
@@ -19,6 +24,7 @@ class PredictionBuildForTokenTypeWord:
         label_list: List[str],
         nugget_tokens: List[CorpusToken]
     ):
+        pred_result = []
         pred_label_ids = torch.argmax(predictions.logits, axis=2)
         offset_mapping = encoded["offset_mapping"]
         special_tokens_mask = encoded["special_tokens_mask"]

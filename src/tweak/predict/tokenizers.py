@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from pydantic import BaseModel
 from typing import List, Optional
 
-from transformers import AutoConfig, AutoModelForTokenClassification, AutoTokenizer
+from transformers import AutoConfig, AutoTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
 
 from tweak.orjson_utils import *
@@ -60,7 +60,8 @@ class HFAutoTokenizer(Tokenizer):
         )
         self.max_length = config.max_length
     
-    def tokenize(self, text_or_tokens):
+
+    def tokenize(self, text_or_tokens) -> BatchEncoding:
         encoded = self.tokenizer.batch_encode_plus(
             text_or_tokens,
             max_length=self.max_length,
@@ -71,7 +72,6 @@ class HFAutoTokenizer(Tokenizer):
             return_offsets_mapping=True,
             return_special_tokens_mask=True,
         )
-        encoded['input_ids']
         return encoded
 
 

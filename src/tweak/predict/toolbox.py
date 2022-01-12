@@ -3,7 +3,7 @@ import pickle
 from dataclasses import dataclass
 
 from tweak.predict.builds import PredictionBuild, PredictionBuildForTokenTypeWord
-from tweak.predict.models.factory import ModelsForTokenClassificationFactory
+from tweak.predict.models.factory import ModelsFactory
 from tweak.predict.predictor import PredictorConfig
 from tweak.predict.tokenizers import TokenizersFactory
 
@@ -19,19 +19,16 @@ class PredictionToolbox:
 class PredictionToolboxPackerForTokenClassification:
 
     @classmethod
-    def pack(self, predict_config: PredictorConfig):
+    def pack(self, predictor_config: PredictorConfig):
 
         tokenizer = TokenizersFactory.create(
-            predict_config.predict_tokenizer_type,
-            predict_config.tokenizer_config.json()
+            predictor_config.predict_tokenizer_type,
+            predictor_config.tokenizer_config.json()
         )
 
-        model = ModelsForTokenClassificationFactory.create(
-            predict_config.predict_model_type,
-            predict_config.model_config.json()
-        )
+        model = ModelsFactory.create(predictor_config.predict_model_type, predictor_config.model_config)
 
-        label_list_path = f"{predict_config.model_config.model_path}/label_list.pickle"
+        label_list_path = f"{predictor_config.model_config.model_path}/label_list.pickle"
         with open(label_list_path, "rb") as lf:
             label_list = pickle.load(lf)
         

@@ -6,6 +6,7 @@ from transformers import AutoConfig, AutoTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.nugget_api import Nugget
+from tunip.service_config import get_service_config
 
 from tweak.orjson_utils import *
 
@@ -132,6 +133,9 @@ class TokenizersFactory:
     def create(cls, predict_tokenizer_type: str, config: str):
 
         config = TokenizerConfig.parse_raw(config)
+
+        service_config = get_service_config()
+        config.model_path = f"{service_config.filesystem_prefix}/{config.model_path}"
 
         if predict_tokenizer_type == 'nugget':
             return NuggetTokenizer(config)

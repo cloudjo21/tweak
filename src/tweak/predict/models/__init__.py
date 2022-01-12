@@ -2,12 +2,14 @@ from abc import ABC
 from pydantic import BaseModel, validator
 from typing import List, Optional
 
+from tweak.task.task_set import TaskType
 from tweak.orjson_utils import *
 
 
 class ModelConfig(BaseModel):
     model_path: str
     task_name: str
+    task_type: str
     checkpoint: Optional[str]
 
     class Config:

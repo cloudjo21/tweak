@@ -1,4 +1,4 @@
-from tweak.predict.predictor import PredictorConfig
+from tweak.predict.predictor import Predictor, PredictorConfig
 from tweak.predict.toolbox import PredictionToolboxPackerForTokenClassification
 
 

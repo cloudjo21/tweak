@@ -19,6 +19,7 @@ class PredictorConfigTest(unittest.TestCase):
             "model_config": {
                 "model_path": str(self.model_path),
                 "task_name": "ner",
+                "task_type": "TOKEN_CLASSIFICATION",
                 "checkpoint": "checkpoint-55200"
             },
             "tokenizer_config": {

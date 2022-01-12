@@ -19,12 +19,13 @@ class PredictorToolboxTest(unittest.TestCase):
             "predict_tokenizer_type": "auto",
             "predict_model_type": "auto",
             "model_config": {
-                "model_path": str(f"{NAUTS_LOCAL_ROOT}/{self.task_path}"),
+                "model_path": str(self.task_path),
                 "task_name": "ner",
+                "task_type": "TOKEN_CLASSIFICATION",
                 "checkpoint": "checkpoint-55200"
             },
             "tokenizer_config": {
-                "model_path": str(f"{NAUTS_LOCAL_ROOT}/{self.task_path}"),
+                "model_path": str(self.task_path),
                 "task_name": "ner",
                 "max_length": 128
             }

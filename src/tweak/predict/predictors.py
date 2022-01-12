@@ -9,7 +9,7 @@ from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.corpus_utils import CorpusToken
 
-from tweak.predict.models.factory.ModelsFactory
+from tweak.predict.models.factory import ModelsFactory
 from tweak.predict.predict_token_classification import TokenClassificationPredictor
 from tweak.predict.predictor import Predictor, PredictorConfig
 from tweak.task.task_set import TaskType

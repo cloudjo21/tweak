@@ -112,7 +112,6 @@ class NuggetHFAutoTokenizer(Tokenizer):
             [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in result_tokens
         ]
         tokens = [[e[2] for e in ent] for ent in nugget_tokens]
-        print(tokens)
         encoded = self.tokenizer.batch_encode_plus(
             tokens,
             max_length=self.max_length,

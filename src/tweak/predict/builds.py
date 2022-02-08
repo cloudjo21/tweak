@@ -15,6 +15,12 @@ class PredictionBuild(ABC):
     pass
 
 
+class PredictionBuildForLastHiddenState(PredictionBuild):
+
+    def __call__(self, encoded, predictions):
+        return predictions.last_hidden_state
+
+
 class PredictionBuildForTokenTypeWord(PredictionBuild):
 
     def __call__(

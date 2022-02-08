@@ -1,6 +1,10 @@
 import torch
 
-from transformers import AutoConfig, AutoModelForTokenClassification
+from transformers import (
+    AutoConfig,
+    AutoModel,
+    AutoModelForTokenClassification
+)
 from transformers.file_utils import ModelOutput
 from transformers.modeling_outputs import (
     SequenceClassifierOutput,
@@ -8,7 +12,11 @@ from transformers.modeling_outputs import (
 )
 from transformers.tokenization_utils_base import BatchEncoding
 
-from tweak.predict.models import ModelConfig, PredictableModel
+from tweak.predict.models import (
+    ModelConfig,
+    PredictableModel,
+    PreTrainedModelConfig
+)
 
 
 class HFAutoModel(PredictableModel):
@@ -18,13 +26,32 @@ class HFAutoModel(PredictableModel):
         # self.model_dir = f"{config.model_path}/{config.checkpoint}/{config.task_name}" if config.checkpoint else config.model_path
 
         self.auto_config = AutoConfig.from_pretrained(
-            config.model_path, finetuning_task=config.task_name
+            config.model_path, # finetuning_task=config.task_name
         )
         # self.pt_model_name = auto_config._name_or_path
 
         
     def infer(self) -> ModelOutput:
         pass
+
+
+class HFAutoModelForPreTrained(HFAutoModel):
+    def __init__(self, model_config: PreTrainedModelConfig):
+        super().__init__(model_config)
+
+        model_path = f"{model_config.model_path}"
+        self.model = AutoModel.from_pretrained(
+            model_path,
+            from_tf=False,
+            config=self.auto_config
+        )
+        self.model.eval()
+    
+    def infer(self, encoded: BatchEncoding):
+        predictions = self.model(
+            input_ids=encoded["input_ids"]
+        )
+        return predictions
 
 
 class HFAutoModelForTokenClassification(HFAutoModel):
@@ -40,8 +67,6 @@ class HFAutoModelForTokenClassification(HFAutoModel):
             config=self.auto_config,
         )
         self.model.eval()
-        self.detail = True
-    
 
     def infer(self, encoded: BatchEncoding) -> TokenClassifierOutput:
 

@@ -1,13 +1,22 @@
 from tunip.service_config import get_service_config
 
-from tweak.predict.models import ModelConfig
-from tweak.predict.models.hf_auto import HFAutoModelForTokenClassification
+from tweak.predict.models import ModelConfig, PreTrainedModelConfig
+from tweak.predict.models.hf_auto import HFAutoModelForPreTrained, HFAutoModelForTokenClassification
 from tweak.predict.models.triton import TritonClientModelForTokenClassification
 from tweak.task.task_set import TaskType
 
 
 class UnsupportedTaskTypeForModels(Exception):
     pass
+
+
+class ModelsForPreTrainedModelFactory:
+    @classmethod
+    def create(cls, model_config: PreTrainedModelConfig):
+        service_config = get_service_config()
+        model_config.model_path = f"{service_config.filesystem_prefix}/{model_config.model_path}"
+
+        return HFAutoModelForPreTrained(model_config)
 
 
 class ModelsForTokenClassificationFactory:
@@ -26,6 +35,10 @@ class ModelsForTokenClassificationFactory:
 class ModelsFactory:
     @classmethod
     def create(cls, predict_model_type: str, model_config: ModelConfig):
+
+        if isinstance(model_config, PreTrainedModelConfig):
+            return ModelsForPreTrainedModelFactory.create(model_config)
+
         if TaskType[model_config.task_type] == TaskType.TOKEN_CLASSIFICATION:
             return ModelsForTokenClassificationFactory.create(predict_model_type, model_config)
         # TODO

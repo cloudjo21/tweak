@@ -9,9 +9,10 @@ from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.corpus_utils import CorpusToken
 
-from tweak.predict.models.factory import ModelsFactory
-from tweak.predict.predict_token_classification import TokenClassificationPredictor
+from tweak.predict.models import PreTrainedModelConfig
 from tweak.predict.predictor import Predictor, PredictorConfig
+from tweak.predict.predict_pretrained import PreTrainedModelPredictor
+from tweak.predict.predict_token_classification import TokenClassificationPredictor
 from tweak.task.task_set import TaskType
 
 
@@ -32,6 +33,12 @@ class PredictorFactory:
 
     @classmethod
     def create(cls, predictor_config: PredictorConfig):
+
+        # for PLM predictor
+        if isinstance(predictor_config.model_config, PreTrainedModelConfig):
+            return PreTrainedModelPredictor(predictor_config)
+
+        # for down-stream task predictor
         task_type = predictor_config.model_config.task_type
         assert predictor_config.model_config.task_type in [t.name for t in TaskType]
 

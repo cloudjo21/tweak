@@ -17,9 +17,6 @@ class TokenClassificationPredictor(Predictor):
         """
         :param: texts        list of list => list of tokens, list => list of sentence
         """
-        is_split_into_words = is_split_into_words = (
-            True if isinstance(texts, list) and isinstance(texts[0], list) else False
-        )
         encoded = self.tokenizer.tokenize(texts)
         output = self.model.infer(encoded)
 

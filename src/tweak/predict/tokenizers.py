@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from copy import deepcopy
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -13,8 +14,9 @@ from tweak.orjson_utils import *
 
 class TokenizerConfig(BaseModel):
     model_path: str
-    task_name: str
     max_length: int = 128
+    task_name: Optional[str]
+    path: Optional[str] = None
 
     class Config:
         json_loads = orjson.loads
@@ -45,7 +47,7 @@ class NuggetTokenizer(Tokenizer):
         self.nugget = Nugget()
 
     def tokenize(self, text_or_tokens) -> BatchEncoding:
-        assert isinstance(text_or_tokens, list) and not isinstance(text_or_tokens[0])
+        assert isinstance(text_or_tokens, list) and not isinstance(text_or_tokens[0], list)
         nugget_tokens = self.nugget(text_or_tokens)
         nugget_tokens = [
             [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in nugget_tokens
@@ -60,15 +62,14 @@ class HFAutoTokenizer(Tokenizer):
         # model_dir = f"{config.model_path}/{config.checkpoint}/{config.task_name}" if config.checkpoint else config.model_path
         # model_dir = f"{config.model_path}/{config.checkpoint}/{config.task_name}" if config.checkpoint else config.model_path
 
-        # print(f"#### {model_dir}")
-
         auto_config = AutoConfig.from_pretrained(
-            config.model_path, finetuning_task=config.task_name
+            config.model_path, # finetuning_task=config.task_name
         )
-        pt_model_name = auto_config._name_or_path
+        pt_model_name = config.path if config.path else auto_config._name_or_path
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             pt_model_name,
+            config=auto_config,
             use_fast=True,
             add_prefix_space=False if "roberta" not in pt_model_name else True,
         )
@@ -76,12 +77,17 @@ class HFAutoTokenizer(Tokenizer):
     
 
     def tokenize(self, text_or_tokens) -> BatchEncoding:
+
+        is_split_into_words = (
+            True if isinstance(text_or_tokens, list) and isinstance(text_or_tokens[0], list) else False
+        )
+
         encoded = self.tokenizer.batch_encode_plus(
             text_or_tokens,
             max_length=self.max_length,
             padding="max_length",
             truncation=True,
-            is_split_into_words=True,
+            is_split_into_words=is_split_into_words,
             return_tensors="pt",
             return_offsets_mapping=True,
             return_special_tokens_mask=True,
@@ -94,12 +100,13 @@ class NuggetHFAutoTokenizer(Tokenizer):
     def __init__(self, config: TokenizerConfig):
         self.nugget = Nugget()
         auto_config = AutoConfig.from_pretrained(
-            config.model_path, finetuning_task=config.task_name
+            config.model_path, # finetuning_task=config.task_name
         )
-        pt_model_name = auto_config._name_or_path
+        pt_model_name = config.path if config.path else auto_config._name_or_path
 
         self.tokenizer = AutoTokenizer.from_pretrained(
             pt_model_name,
+            config=auto_config,
             use_fast=True,
             add_prefix_space=False if "roberta" not in pt_model_name else True,
         )
@@ -132,9 +139,12 @@ class TokenizersFactory:
     def create(cls, predict_tokenizer_type: str, config: str):
 
         config = TokenizerConfig.parse_raw(config)
-
+        config = deepcopy(config)
         service_config = get_service_config()
+
         config.model_path = f"{service_config.filesystem_prefix}/{config.model_path}"
+        if config.path:
+            config.path = f"{service_config.filesystem_prefix}/{config.path}"
 
         if predict_tokenizer_type == 'nugget':
             return NuggetTokenizer(config)

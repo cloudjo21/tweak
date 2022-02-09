@@ -1,8 +1,9 @@
 import torch
 
 from pydantic import BaseModel
+from typing import Union
 
-from tweak.predict.models import ModelConfig
+from tweak.predict.models import ModelConfig, PreTrainedModelConfig
 from tweak.predict.tokenizers import TokenizerConfig
 
 
@@ -18,5 +19,5 @@ class PredictorConfig(BaseModel):
     # triton/auto
     predict_model_type: str
 
-    model_config: ModelConfig
+    model_config: Union[ModelConfig, PreTrainedModelConfig]
     tokenizer_config: TokenizerConfig

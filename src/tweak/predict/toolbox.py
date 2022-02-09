@@ -2,7 +2,11 @@ import pickle
 
 from dataclasses import dataclass
 
-from tweak.predict.builds import PredictionBuildForTokenTypeWord, PredictionBuildForLastHiddenState
+from tweak.predict.builds import (
+    PredictionBuildForTokenTypeWord,
+    PredictionBuildForLastHiddenState,
+    PredictionBuildForTorchScriptLastHiddenState
+)
 from tweak.predict.models.factory import ModelsFactory
 from tweak.predict.predictor import PredictorConfig
 from tweak.predict.tokenizers import TokenizersFactory
@@ -61,7 +65,10 @@ class PredictionToolboxPackerForPreTrainedModel:
         )
 
         # TODO provide child class of PredictionBuild by factory
-        prediction_build_cls = PredictionBuildForLastHiddenState
+        if predictor_config.predict_model_type in ['auto', 'nugget_auto']:
+            prediction_build_cls = PredictionBuildForLastHiddenState
+        elif predictor_config.predict_model_type in ['torchscript']:
+            prediction_build_cls = PredictionBuildForTorchScriptLastHiddenState
 
         return PredictionToolboxForPreTrainedModel(model, tokenizer, prediction_build_cls)
     

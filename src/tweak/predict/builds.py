@@ -21,6 +21,12 @@ class PredictionBuildForLastHiddenState(PredictionBuild):
         return predictions.last_hidden_state
 
 
+class PredictionBuildForTorchScriptLastHiddenState(PredictionBuild):
+
+    def __call__(self, encoded, predictions):
+        return predictions[0]
+
+
 class PredictionBuildForTokenTypeWord(PredictionBuild):
 
     def __call__(

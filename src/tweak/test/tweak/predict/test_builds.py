@@ -10,7 +10,7 @@ from tweak.predict.models import ModelConfig
 from tweak.predict.models.hf_auto import HFAutoModelForTokenClassification
 from tweak.predict.models.factory import ModelsForTokenClassificationFactory
 from tweak.predict.builds import PredictionBuildForTokenTypeWord
-from tweak.predict.tokenizers import TokenizerConfig
+from tweak.predict.config import TokenizerConfig
 from tweak.predict.tokenizers import TokenizersFactory
 
 

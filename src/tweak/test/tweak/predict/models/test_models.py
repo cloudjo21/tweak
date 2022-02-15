@@ -4,10 +4,10 @@ from tunip.env import NAUTS_LOCAL_ROOT
 from tunip.path_utils import TaskPath
 from tunip.service_config import get_service_config
 
+from tweak.predict.config import TokenizerConfig
 from tweak.predict.models import ModelConfig
 from tweak.predict.models.factory import ModelsForTokenClassificationFactory
 from tweak.predict.models.hf_auto import HFAutoModelForTokenClassification
-from tweak.predict.tokenizers import TokenizerConfig
 from tweak.predict.tokenizers import TokenizersFactory
 
 

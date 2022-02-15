@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Union
 
 from tweak.predict.models import ModelConfig, PreTrainedModelConfig
-from tweak.predict.tokenizers import TokenizerConfig
+from tweak.predict.config import TokenizerConfig
 
 
 class Predictor(torch.nn.Module):

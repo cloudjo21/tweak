@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from pydantic import BaseModel
-from typing import List, Optional
+from typing import List
 
 from transformers import AutoConfig, AutoTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
@@ -9,18 +8,8 @@ from transformers.tokenization_utils_base import BatchEncoding
 from tunip.nugget_api import Nugget
 from tunip.service_config import get_service_config
 
-from tweak.orjson_utils import *
-
-
-class TokenizerConfig(BaseModel):
-    model_path: str
-    max_length: int = 128
-    task_name: Optional[str]
-    path: Optional[str] = None
-
-    class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
+from tweak.predict.config import TokenizerConfig
+from tweak.predict.resource_materialize import ResourceMaterializer
 
 
 class TokenizerOutput(ABC):
@@ -140,11 +129,8 @@ class TokenizersFactory:
 
         config = TokenizerConfig.parse_raw(config)
         config = deepcopy(config)
-        service_config = get_service_config()
 
-        config.model_path = f"{service_config.filesystem_prefix}/{config.model_path}"
-        if config.path:
-            config.path = f"{service_config.filesystem_prefix}/{config.path}"
+        ResourceMaterializer.apply_for_tokenizer(config, get_service_config())
 
         if predict_tokenizer_type == 'nugget':
             return NuggetTokenizer(config)

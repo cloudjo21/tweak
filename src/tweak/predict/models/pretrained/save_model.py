@@ -3,9 +3,6 @@ import urllib.parse
 
 from transformers import AutoModel, AutoTokenizer
 
-import tunip.file_utils.services as file_services
-import tunip.path_utils.services as path_services
-
 from tunip.path.mart import MartPretrainedModelPath, MartTokenizerPath
 from tunip.service_config import get_service_config
 from tunip.snapshot_utils import snapshot_now
@@ -18,9 +15,6 @@ class HfPretrainedModelDownloader:
         self.tokenizer_path = job_config.get('tokenizer_path')
 
     def download(self):
-        file_service = file_services.get(self.service_config.filesystem, config=self.service_config.config)
-        path_service = path_services.get(self.service_config.filesystem, config=self.service_config.config)
-
         plm_model = AutoModel.from_pretrained(self.model_name)
         model_name = urllib.parse.quote(self.model_name, safe='')
         plm_model_path = f"{self.service_config.local_prefix}/{str(MartPretrainedModelPath(user_name=self.service_config.username, model_name=model_name))}"

@@ -83,4 +83,4 @@ class PredictorsTest(unittest.TestCase):
 
         predictor = PreTrainedModelPredictor(pred_conf)
         result = predictor.predict(["안녕하세요 저는 김철수입니다."])
-        assert result.values
+        assert result

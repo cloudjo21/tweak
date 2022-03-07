@@ -4,6 +4,7 @@ import unittest
 
 from functools import reduce
 
+from tunip.constants import UNK
 from tunip.env import NAUTS_LOCAL_ROOT
 from tunip.nugget_api import Nugget
 from tunip.path_utils import TaskPath
@@ -55,7 +56,7 @@ class PredictorsTest(unittest.TestCase):
         torchscript_model_config = {"model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/torchscript", "model_name": "monologg/koelectra-small-v3-discriminator"}
         tokenizer_config = {
             "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator",
-            "path": "/user/nauts/mart/tokenizers/monologg%2Fkoelectra-small-v3-discriminator",
+            "path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/vocab",
             "max_length": 128
         }
 
@@ -97,7 +98,7 @@ class PredictorsTest(unittest.TestCase):
             },
             "tokenizer_config": {
                 "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator",
-                "path": "/user/nauts/mart/tokenizers/monologg%2Fkoelectra-small-v3-discriminator",
+                "path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/vocab",
                 "max_length": 128
             }
         }
@@ -110,6 +111,8 @@ class PredictorsTest(unittest.TestCase):
         # encoded = tokenizer.tokenize([["안녕하세요", "저", "는", "김철수", "입니다", "."]])
         # print(encoded1)
         # print(encoded2)
+        assert encoded1[0].tokens[1] != UNK
+        assert encoded2[0].tokens[1] != UNK
 
         plm_predictor = PredictorFactory.create(pred_config)
         response = plm_predictor.predict([text1, text2])

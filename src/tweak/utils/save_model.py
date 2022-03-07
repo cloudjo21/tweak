@@ -29,6 +29,7 @@ class HfPretrainedModelDownloader:
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
         
         plm_model.save_pretrained(plm_model_path)
+        tokenizer.save_pretrained(f"{plm_model_path}/vocab")
         tokenizer.save_vocabulary(save_directory=tokenizer_path_or_pt_model_name)
 
 # plm_model = HfPretrainedModelDownloader(get_service_config(), {'pretrained_model_name': 'monologg/koelectra-small-v3-discriminator'})

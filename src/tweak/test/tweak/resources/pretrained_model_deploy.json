@@ -11,7 +11,7 @@
                 },
                 "tokenizer_config": {
                     "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator",
-                    "path": "/user/nauts/mart/tokenizers/monologg%2Fkoelectra-small-v3-discriminator",
+                    "path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/vocab",
                     "max_length": 128
                 }
             }

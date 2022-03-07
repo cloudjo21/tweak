@@ -39,7 +39,7 @@ class TorchScriptModelForPreTrained(TorchScriptModel):
     
     def infer(self, encoded: BatchEncoding):
         with torch.no_grad():
-            values = [encoded['input_ids'], encoded['attention_mask'], encoded['token_type_ids']]
+            values = [encoded['input_ids'], encoded['token_type_ids'], encoded['attention_mask']]
             predictions = self.model(
                 *values
                 # input_ids=encoded["input_ids"]

@@ -32,6 +32,7 @@ class PredictionToolboxPackerForTokenClassification:
 
         model = ModelsFactory.create(predictor_config.predict_model_type, predictor_config.model_config)
 
+        # TODO resource materialization
         label_list_path = f"{predictor_config.model_config.model_path}/label_list.pickle"
         with open(label_list_path, "rb") as lf:
             label_list = pickle.load(lf)

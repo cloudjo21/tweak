@@ -6,8 +6,10 @@ from transformers import AutoConfig, AutoTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.nugget_api import Nugget
+from tunip.preprocess import preprocess_tokens
 from tunip.service_config import get_service_config
 
+from tweak import LOGGER
 from tweak.predict.config import TokenizerConfig
 from tweak.predict.resource_materialize import ResourceMaterializer
 
@@ -104,10 +106,13 @@ class NuggetHFAutoTokenizer(Tokenizer):
     def tokenize(self, text_or_tokens) -> BatchEncoding:
         assert isinstance(text_or_tokens, list) and not isinstance(text_or_tokens[0], list)
         result_tokens = self.nugget(text_or_tokens)
-        nugget_tokens = [
-            [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in result_tokens
-        ]
+        # nugget_tokens = [
+        #     [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in result_tokens
+        # ]
+        nugget_tokens = [[(e[0], e[1], e[3]) for e in tokens] for tokens in preprocess_tokens(list(result_tokens), white_tags=["N"])]
         tokens = [[e[2] for e in ent] for ent in nugget_tokens]
+        LOGGER.info(f"{text_or_tokens} => {tokens}")
+
         encoded = self.tokenizer.batch_encode_plus(
             tokens,
             max_length=self.max_length,

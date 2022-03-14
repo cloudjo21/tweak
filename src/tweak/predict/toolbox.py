@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from tweak.predict.builds import (
     PredictionBuildForTokenTypeWord,
     PredictionBuildForLastHiddenState,
-    PredictionBuildForTorchScriptLastHiddenState
+    PredictionBuildForTorchScriptLastHiddenState,
+    PredictionBuildForTorchScriptLastHiddenStateWithZero,
 )
 from tweak.predict.models.factory import ModelsFactory
 from tweak.predict.predictor import PredictorConfig
@@ -66,9 +67,11 @@ class PredictionToolboxPackerForPreTrainedModel:
         )
 
         # TODO provide child class of PredictionBuild by factory
-        if predictor_config.predict_model_type in ['auto', 'nugget_auto']:
+        if predictor_config.predict_model_type in ['auto']:
             prediction_build_cls = PredictionBuildForLastHiddenState
-        elif predictor_config.predict_model_type in ['torchscript']:
+        elif predictor_config.predict_model_type in ['torchscript'] and predictor_config.zero_padding:
+            prediction_build_cls = PredictionBuildForTorchScriptLastHiddenStateWithZero
+        elif predictor_config.predict_model_type in ['torchscript'] and not predictor_config.zero_padding:
             prediction_build_cls = PredictionBuildForTorchScriptLastHiddenState
 
         return PredictionToolboxForPreTrainedModel(model, tokenizer, prediction_build_cls)

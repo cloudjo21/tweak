@@ -10,6 +10,8 @@ from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.corpus_utils import CorpusToken
 
+from tweak.utils.transformers_utils import index_fill_with_zero_vector
+
 
 class PredictionBuild(ABC):
     pass
@@ -25,6 +27,12 @@ class PredictionBuildForTorchScriptLastHiddenState(PredictionBuild):
 
     def __call__(self, encoded, predictions):
         return predictions[0]
+
+
+class PredictionBuildForTorchScriptLastHiddenStateWithZero(PredictionBuild):
+
+    def __call__(self, encoded, predictions):
+        return index_fill_with_zero_vector(encoded.input_ids, predictions[0])
 
 
 class PredictionBuildForTokenTypeWord(PredictionBuild):

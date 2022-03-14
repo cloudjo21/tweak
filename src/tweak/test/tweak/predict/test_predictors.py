@@ -86,11 +86,11 @@ class PredictorsTest(unittest.TestCase):
 
 
     def test_compute_similarity(self):
-        text1 = "자유민주주의(自由民主主義) 또는 서구식 민주주의(Western democracy)"
-        text2 = "자유민주주의(自由民主主義) 또는 서구식 민주주의(Western democracy)"
+        text1 = "텍사스 시티"
+        text2 = "텍사스 시티"
 
         predictor_config = {
-            "predict_tokenizer_type": "auto",
+            "predict_tokenizer_type": "nugget_auto",
             "predict_model_type": "torchscript",
             "model_config": {
                 "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/torchscript",
@@ -105,24 +105,40 @@ class PredictorsTest(unittest.TestCase):
 
         pred_config = PredictorConfig.parse_obj(predictor_config)
 
-        tokenizer = TokenizersFactory.create('auto', pred_config.tokenizer_config.json())
-        encoded1 = tokenizer.tokenize([text1])
-        encoded2 = tokenizer.tokenize([text2])
+        # tokenizer = TokenizersFactory.create('auto', pred_config.tokenizer_config.json())
+        # encoded1 = tokenizer.tokenize([text1])
+        # encoded2 = tokenizer.tokenize([text2])
+        # print(encoded1)
+        # print(encoded1)
         # encoded = tokenizer.tokenize([["안녕하세요", "저", "는", "김철수", "입니다", "."]])
         # print(encoded1)
         # print(encoded2)
-        assert encoded1[0].tokens[1] != UNK
-        assert encoded2[0].tokens[1] != UNK
+        # assert encoded1[0].tokens[1] != UNK
+        # assert encoded2[0].tokens[1] != UNK
 
         plm_predictor = PredictorFactory.create(pred_config)
         response = plm_predictor.predict([text1, text2])
-        # print(response[0].shape)
-        # print(response[1].shape)
+        print(f"response.dtype: {response.dtype}")
+        print(response[0].shape)
+        print(response[1].shape)
+        # q_vector = np.mean(np.asarray(plm_res["result"]), axis=1).astype('float32')
 
-        cossim = torch.nn.CosineSimilarity(dim=1, eps=1e-6)
-        sim = cossim(response[0], response[1])
+        # print(encoded1.input_ids)
+        # length = max((encoded1.input_ids[0] == 3).nonzero().item(), (encoded2.input_ids[0] == 3).nonzero().item())
+        # print(length)
 
-        assert reduce(
-            lambda a, b: a == b,
-            sim
-        ).item() == 1.
+        res0 = torch.mean(response[0], dim=0)
+        res1 = torch.mean(response[1], dim=0)
+        print(res0.shape)
+        print(res1.shape)
+        # print(res0[0: length])
+        # print(res1[0: length])
+        cossim = torch.nn.CosineSimilarity(dim=0, eps=1e-6)
+        sim = cossim(res0, res1)
+        print(f"cossim: {sim}")
+
+        assert sim > 0.99
+        # assert reduce(
+        #     lambda a, b: a == b,
+        #     sim
+        # ).item() == 1.

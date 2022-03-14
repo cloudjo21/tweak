@@ -23,3 +23,5 @@ class PredictorConfig(BaseModel):
 
     model_config: Union[ModelConfig, PreTrainedModelConfig]
     tokenizer_config: TokenizerConfig
+
+    zero_padding: bool = True

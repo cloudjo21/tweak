@@ -9,6 +9,7 @@ class TokenizerConfig(BaseModel):
     max_length: int = 128
     task_name: Optional[str]
     path: Optional[str] = None
+    allow_tags: Optional[list] = []
 
     class Config:
         json_loads = orjson.loads

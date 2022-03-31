@@ -31,7 +31,10 @@ class ResourceMaterializer:
     ):
         webhdfs = HttpBasedWebHdfsFileHandler(service_config)
 
-        cls._apply_if_service_from_hdfs(config.model_path, webhdfs, service_config)
+        # download checkpoint-*/, [task]/
+        cls._apply_if_service_from_hdfs(f"{config.model_path}", webhdfs, service_config)
+        if config.checkpoint:
+            cls._apply_if_service_from_hdfs(f"{config.model_path}/../{config.checkpoint}", webhdfs, service_config)
         config.model_path = f"{service_config.local_prefix}/{config.model_path}"
 
     @classmethod

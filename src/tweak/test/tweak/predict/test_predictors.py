@@ -87,7 +87,9 @@ class PredictorsTest(unittest.TestCase):
 
     def test_compute_similarity(self):
         text1 = "텍사스 시티"
-        text2 = "텍사스 시티"
+        text2 = "텍사스 시티 경기는 오늘 이른 저녁에서야 끝이 났다."
+        # text2 = "한국인 김철수, 그는 불가능을 모르는 남자다."
+        # text2 = "본사 공식홈 첫구매 10% + APP 5% 할인쿠폰 가장 빠른 신제품을 만나보세요. 모든 회원에게 쇼핑지원금 지급!"
 
         predictor_config = {
             "predict_tokenizer_type": "nugget_auto",
@@ -99,20 +101,17 @@ class PredictorsTest(unittest.TestCase):
             "tokenizer_config": {
                 "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator",
                 "path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/vocab",
-                "max_length": 128
+                "max_length": 512
             }
         }
 
         pred_config = PredictorConfig.parse_obj(predictor_config)
 
-        # tokenizer = TokenizersFactory.create('auto', pred_config.tokenizer_config.json())
-        # encoded1 = tokenizer.tokenize([text1])
-        # encoded2 = tokenizer.tokenize([text2])
-        # print(encoded1)
-        # print(encoded1)
-        # encoded = tokenizer.tokenize([["안녕하세요", "저", "는", "김철수", "입니다", "."]])
-        # print(encoded1)
-        # print(encoded2)
+        tokenizer = TokenizersFactory.create('nugget_auto', pred_config.tokenizer_config.json())
+        encoded1 = tokenizer.tokenize([text1])
+        encoded2 = tokenizer.tokenize([text2])
+        print(encoded1)
+        print(encoded2)
         # assert encoded1[0].tokens[1] != UNK
         # assert encoded2[0].tokens[1] != UNK
 
@@ -124,15 +123,17 @@ class PredictorsTest(unittest.TestCase):
         # q_vector = np.mean(np.asarray(plm_res["result"]), axis=1).astype('float32')
 
         # print(encoded1.input_ids)
-        # length = max((encoded1.input_ids[0] == 3).nonzero().item(), (encoded2.input_ids[0] == 3).nonzero().item())
-        # print(length)
+        max_length = max((encoded1.input_ids[0] == 3).nonzero().item(), (encoded2.input_ids[0] == 3).nonzero().item())
+        min_length = min((encoded1.input_ids[0] == 3).nonzero().item(), (encoded2.input_ids[0] == 3).nonzero().item())
 
-        res0 = torch.mean(response[0], dim=0)
-        res1 = torch.mean(response[1], dim=0)
+        res0 = torch.mean(response[0][1:max_length], dim=0)
+        res1 = torch.mean(response[1][1:max_length], dim=0)
+
+        # res0 = torch.mean(response[0][1:min_length], dim=0)
+        # res1 = torch.mean(response[1][1:min_length], dim=0)
+
         print(res0.shape)
         print(res1.shape)
-        # print(res0[0: length])
-        # print(res1[0: length])
         cossim = torch.nn.CosineSimilarity(dim=0, eps=1e-6)
         sim = cossim(res0, res1)
         print(f"cossim: {sim}")

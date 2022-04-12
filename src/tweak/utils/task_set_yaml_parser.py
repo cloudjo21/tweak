@@ -4,9 +4,8 @@ from tunip.config import Config
 from tunip.env import NAUTS_LOCAL_ROOT
 from tunip.path_utils import default_local_user_dir
 from tunip.snapshot_util import snapshot_now
+from tunip.task.task_set import InputColumn, InputColumnType, Task, TaskSet, TaskType
 from tunip.yaml_loader import YamlLoader
-
-from tweak.task.task_set import InputColumn, InputColumnType, Task, TaskSet, TaskType
 
 
 class NoInputColumnsException(Exception):

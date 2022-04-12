@@ -8,12 +8,12 @@ from transformers.modeling_outputs import (
 from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.corpus_utils import CorpusToken
+from tunip.task.task_set import TaskType
 
 from tweak.predict.models import PreTrainedModelConfig
 from tweak.predict.predictor import Predictor, PredictorConfig
 from tweak.predict.predict_pretrained import PreTrainedModelPredictor
 from tweak.predict.predict_token_classification import TokenClassificationPredictor
-from tweak.task.task_set import TaskType
 
 
 class PredictorForTokenClassification(Predictor):

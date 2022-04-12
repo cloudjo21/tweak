@@ -1,11 +1,11 @@
 from tunip.service_config import get_service_config
+from tunip.task.task_set import TaskType
 
 from tweak.predict.models import ModelConfig, PreTrainedModelConfig
 from tweak.predict.models.hf_auto import HFAutoModelForPreTrained, HFAutoModelForTokenClassification
 from tweak.predict.models.torchscript import TorchScriptModelForPreTrained
 from tweak.predict.models.triton import TritonClientModelForTokenClassification
 from tweak.predict.resource_materialize import ResourceMaterializer
-from tweak.task.task_set import TaskType
 
 
 class UnsupportedTaskTypeForModels(Exception):

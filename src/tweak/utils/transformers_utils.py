@@ -2,13 +2,15 @@ import torch
 
 from itertools import repeat
 
-from tunip.constants import UNK_IDX
-
 
 def length_of_input_ids(batch_input_ids: torch.Tensor):
     lengths = []
     for input_ids in batch_input_ids:
-        lengths.append((input_ids == UNK_IDX).nonzero().item())
+        try:
+            lengths.append((input_ids == 0).nonzero()[0].item())
+        except IndexError as ie:
+            #IndexError: index 0 is out of bounds for dimension 0 with size 0
+            lengths.append(len(input_ids))
     return lengths
 
 

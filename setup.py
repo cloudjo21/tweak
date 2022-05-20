@@ -7,7 +7,7 @@ with open("requirements.txt") as f:
 setup(
     name="tweak",
     version="0.0.1",
-    url="https://github.com/ascentkorea/tweak.git",
+    url="https://bitbucket.org/peterleecodiit/tweak.git",
     packages=find_packages("src"),
     package_dir={"tweak": "src/tweak"},
     python_requires=">=3.6",

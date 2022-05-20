@@ -1,4 +1,5 @@
 # TODO move to utils
+import argparse
 import os
 import urllib.parse
 
@@ -32,5 +33,18 @@ class HfPretrainedModelDownloader:
         tokenizer.save_pretrained(f"{plm_model_path}/vocab")
         tokenizer.save_vocabulary(save_directory=tokenizer_path_or_pt_model_name)
 
-# plm_model = HfPretrainedModelDownloader(get_service_config(), {'pretrained_model_name': 'monologg/koelectra-small-v3-discriminator'})
-# plm_model.download()
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="plm model and vocabulary downloader")
+    parser.add_argument(
+        "-n",
+        "--name",
+        help="the name of pretraining language model",
+        type=str,
+        required=True
+    )
+
+    args = parser.parse_args()
+
+    plm_model = HfPretrainedModelDownloader(get_service_config(), {'pretrained_model_name': args.name})
+    plm_model.download()

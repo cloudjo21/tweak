@@ -9,8 +9,8 @@ from tweak.clustering import Linkage
 
 class LinkageLinker:
 
-    def __init__(self, hac_dist_threshold):
-        self.hac_dist_threshold = hac_dist_threshold
+    def __init__(self, dist_threshold):
+        self.hac_dist_threshold = dist_threshold
 
 
     def __call__(self, linkage_matrix):

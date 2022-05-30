@@ -2,7 +2,7 @@ import numpy as np
 import scipy.spatial.distance as distance
 
 from itertools import combinations
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from typing import List
 
 
@@ -10,9 +10,19 @@ class JaccardDistanceCalcRequest(BaseModel):
     term_vector: np.ndarray
     num_rows: int
 
+    @validator('term_vector', pre=True)
+    def parse_term_vactor(v):
+      return np.array(v, dtype=float)
+
+    class Config:
+        arbitrary_types_allowed = True
+
 
 class JaccardDistanceCalcResponse(BaseModel):
     distances: List[np.float64]
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class BigramJaccardDistanceCalc:

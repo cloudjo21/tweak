@@ -4,7 +4,7 @@ from collections import deque
 from copy import deepcopy
 from typing import List
 
-from tweak.clustering import Linkage
+from tweak.clustering.linkage import Linkage
 
 
 class LinkageLinker:
@@ -40,3 +40,5 @@ class LinkageLinker:
                     id2lineage[linkage_item.cid] = id2lineage[linkage_branch.cid]
                     id2lineage[linkage_item.cid].append(linkage_item)
                     del id2lineage[linkage_branch.cid]
+
+        return id2lineage

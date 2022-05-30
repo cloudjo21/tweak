@@ -5,7 +5,7 @@ from copy import deepcopy
 from pydantic import BaseModel
 from typing import List, Optional
 
-from tweak.clustering.linkage import LinkageLinker
+from tweak.clustering.linkage.linker import LinkageLinker
 
 
 class HAC:
@@ -24,12 +24,12 @@ class HAC:
 
         # build_and_cut
         clu2linkages = self.linkage_linker(linkage_matrix)
-        docid_clusters = self._cluster(clu2linkages)
+        docid_clusters = self._cluster(clu2linkages, target_num)
 
         return docid_clusters
 
 
-    def _cluster(self, clu2linkages: dict, target_num):
+    def _cluster(self, clu2linkages: dict, target_num: int):
         docid_clusters = []
         for k, v in clu2linkages.items():
             doc_ids = [v[0].id, v[0].nn_id]

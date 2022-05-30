@@ -4,13 +4,13 @@ from collections import deque
 from copy import deepcopy
 from typing import List
 
-from tweak.clustering import Linkage
+from tweak.clustering.linkage import Linkage
 
 
 class LinkageLinker:
 
-    def __init__(self, hac_dist_threshold):
-        self.hac_dist_threshold = hac_dist_threshold
+    def __init__(self, dist_threshold):
+        self.hac_dist_threshold = dist_threshold
 
 
     def __call__(self, linkage_matrix):
@@ -40,3 +40,5 @@ class LinkageLinker:
                     id2lineage[linkage_item.cid] = id2lineage[linkage_branch.cid]
                     id2lineage[linkage_item.cid].append(linkage_item)
                     del id2lineage[linkage_branch.cid]
+
+        return id2lineage

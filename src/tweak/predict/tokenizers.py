@@ -6,7 +6,6 @@ from transformers import AutoConfig, AutoTokenizer
 from transformers.tokenization_utils_base import BatchEncoding
 
 from tunip.nugget_api import Nugget, NuggetFilterResultFormat
-from tunip.preprocess import preprocess_tokens
 from tunip.service_config import get_service_config
 
 from tweak import LOGGER

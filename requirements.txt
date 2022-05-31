@@ -1,3 +1,4 @@
 #torch==1.9.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 torch==1.9.0
 transformers==4.18.0
+fastcluster

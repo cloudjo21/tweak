@@ -7,10 +7,13 @@ from sklearn.feature_extraction.text import CountVectorizer
 from tunip.es_utils import init_elastic_client
 from tunip.nugget_api import Nugget, NuggetFilterResultFormat
 from tunip.service_config import get_service_config
+
+from tweak.clustering import NncRequest
+from tweak.clustering.factory import NncFactory
 from tweak.clustering.distance.bigram_jaccard_dist import (
     BigramJaccardDistanceCalc,
     JaccardDistanceCalcRequest,
-    JaccardDistanceCalcResponse
+    JaccardDistanceCalcResponse,
 )
 
 
@@ -29,9 +32,9 @@ class JaccardDistTest(unittest.TestCase):
         self.distance_calc = BigramJaccardDistanceCalc()
 
         self.max_rows = [1, 2, 3, 4, 5, 7, 10, 100, 150, 200]
-        # self.max_rows = [1, 2, 3, 4, 5, 7]
 
-    def test_search_tokenize_calc_jaccard_distance(self):
+    def test_hac_of_nnc(self):
+
         for max_row in self.max_rows:
             search_res_size = max_row
 
@@ -78,4 +81,10 @@ class JaccardDistTest(unittest.TestCase):
             # < 50ms for 100 es result docs
             # < 100ms for 150 es result docs
             # < 200ms for 200 es result docs
-            assert duration_in_ms < 0.150
+            assert duration_in_ms < 0.200
+
+            hac = NncFactory.create("HAC", 0.666666)
+            nnc_req = NncRequest(distances=dist_calc_res.distances, dist_calc_status=dist_calc_res.status)
+            docid_clusters = hac(nnc_req)
+
+            print(docid_clusters)

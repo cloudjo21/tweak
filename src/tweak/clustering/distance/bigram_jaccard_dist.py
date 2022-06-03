@@ -1,11 +1,12 @@
 import numpy as np
 import scipy.spatial.distance as distance
-import timeit
 
 from abc import ABC
 from itertools import combinations
 from pydantic import BaseModel, validator
 from typing import List
+
+from . import DistanceCalcStatus
 
 
 class JaccardDistanceCalcRequest(BaseModel):
@@ -22,13 +23,22 @@ class JaccardDistanceCalcRequest(BaseModel):
 
 class JaccardDistanceCalcResponse(BaseModel):
     distances: List[np.float64]
+    status: DistanceCalcStatus = DistanceCalcStatus.OK
 
     class Config:
         arbitrary_types_allowed = True
 
 
 class JaccardDistanceCalcMethod(ABC):
-    pass
+
+    def status_by_num_rows(self, num_rows):
+        if num_rows > 1:
+            return DistanceCalcStatus.OK
+        elif num_rows == 1:
+            return DistanceCalcStatus.ONLY
+        else: # num_rows == 0
+            return DistanceCalcStatus.EMPTY
+
 
 class JaccardDistanceCalcMethodA(JaccardDistanceCalcMethod):
     """
@@ -47,7 +57,10 @@ class JaccardDistanceCalcMethodA(JaccardDistanceCalcMethod):
         for i, j in comb_indices:
             # list of numpy.float64
             distances.append(distance.jaccard(calc_request.term_vector[i], calc_request.term_vector[j]))
-        calc_response = JaccardDistanceCalcResponse(distances=distances)
+        calc_response = JaccardDistanceCalcResponse(
+            distances=distances,
+            status=self.status_by_num_rows(num_rows)
+        )
         return calc_response
 
 
@@ -73,7 +86,10 @@ class JaccardDistanceCalcMethodB(JaccardDistanceCalcMethod):
         c = np.bitwise_xor(a ,b).sum(axis=-1)
         d = np.bitwise_and(a ,b).sum(axis=-1)
         distances = c / (c+d)
-        calc_response = JaccardDistanceCalcResponse(distances=distances.tolist())
+        calc_response = JaccardDistanceCalcResponse(
+            distances=distances.tolist(),
+            status=self.status_by_num_rows(num_rows)
+        )
         return calc_response
 
 
@@ -101,7 +117,7 @@ class JaccardDistanceCalcMethodC(JaccardDistanceCalcMethod):
         b_indices = list(map(lambda x: x[1], comb_indices))
 
         for u in range(0, chunk):
-            batch_indexes = list(range(batch_size*u, batch_size*(u+1), 2))
+            batch_indexes = list(range(batch_size*u, batch_size*(u+1)))
             batch_offset = batch_size*u
 
             a[batch_offset : batch_offset + len(batch_indexes)] = calc_request.term_vector[np.take(a_indices, batch_indexes, axis=0)]
@@ -121,7 +137,10 @@ class JaccardDistanceCalcMethodC(JaccardDistanceCalcMethod):
 
         distances = c / (c+d)
 
-        calc_response = JaccardDistanceCalcResponse(distances=distances.tolist())
+        calc_response = JaccardDistanceCalcResponse(
+            distances=distances.tolist(),
+            status=self.status_by_num_rows(num_rows)
+        )
 
         return calc_response
 

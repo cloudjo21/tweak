@@ -5,10 +5,12 @@ from copy import deepcopy
 from pydantic import BaseModel
 from typing import List, Optional
 
+from tweak.clustering import NncRequest
+from tweak.clustering.distance import DistanceCalcStatus, NotSupportedDistanceCalcStatus
 from tweak.clustering.linkage.linker import LinkageLinker
 
 
-class HAC:
+class _HAC:
     """
     Hierarchical Agglomerative Clustering
     """
@@ -38,3 +40,18 @@ class HAC:
             docid_clusters.append(doc_ids)
 
         return docid_clusters
+
+
+class HAC:
+    def __init__(self, dist_threshold):
+        self._model = _HAC(dist_threshold)
+
+    def __call__(self, nnc_request: NncRequest) -> list:
+        if nnc_request.dist_calc_status is DistanceCalcStatus.OK:
+            return self._model(nnc_request.distances, nnc_request.method)
+        elif nnc_request.dist_calc_status is DistanceCalcStatus.ONLY:
+            return [[1]]
+        elif nnc_request.dist_calc_status is DistanceCalcStatus.EMPTY:
+            return [[]]
+        else:
+            raise NotSupportedDistanceCalcStatus()

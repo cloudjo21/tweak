@@ -27,11 +27,15 @@ class JaccardDistTest(unittest.TestCase):
         self.white_ptags = ['V', 'N', 'J', 'M', 'SL', 'SH', 'SN']
 
         self.distance_calc = BigramJaccardDistanceCalc()
-        self.max_rows = [100, 150, 200]
 
-    def test_search_and_tokenize(self):
+        self.max_rows = [1, 2, 3, 4, 5, 7, 10, 100, 150, 200]
+        # self.max_rows = [1, 2, 3, 4, 5, 7]
+
+    def test_search_tokenize_calc_jaccard_distance(self):
         for max_row in self.max_rows:
             search_res_size = max_row
+
+            print(f"#### {max_row} number of search results ...")
 
             query_example = "content(넷플릭스) AND content(규제)"
             query = {
@@ -69,7 +73,7 @@ class JaccardDistTest(unittest.TestCase):
             start = timeit.default_timer()
             dist_calc_res: JaccardDistanceCalcResponse = self.distance_calc(dist_calc_req)
             duration_in_ms = timeit.default_timer() - start
-            print(f"dist calc took {duration_in_ms} ms.")
+            print(f"dist calc took {duration_in_ms * 1000} ms.")
 
             # < 50ms for 100 es result docs
             # < 100ms for 150 es result docs

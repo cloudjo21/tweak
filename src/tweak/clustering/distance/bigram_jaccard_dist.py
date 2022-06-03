@@ -91,29 +91,33 @@ class JaccardDistanceCalcMethodC(JaccardDistanceCalcMethod):
         # make index combinations
         comb_indices = list(combinations(range(0, num_rows), 2))
 
-        a = np.zeros([len(comb_indices), calc_request.term_vector.shape[1]], dtype=np.int8)
-        b = np.zeros([len(comb_indices), calc_request.term_vector.shape[1]], dtype=np.int8)
-
         batch_size = int(len(comb_indices) / chunk)
-        a_indices = list(map(lambda x: x[0], comb_indices))
-        b_indices = list(map(lambda x: x[1], comb_indices))
+        chunk = 0 if batch_size < 1 else chunk
         rest_index = len(comb_indices) - batch_size * chunk
 
+        a = np.zeros([len(comb_indices), calc_request.term_vector.shape[1]], dtype=np.int8)
+        b = np.zeros([len(comb_indices), calc_request.term_vector.shape[1]], dtype=np.int8)
+        a_indices = list(map(lambda x: x[0], comb_indices))
+        b_indices = list(map(lambda x: x[1], comb_indices))
+
         for u in range(0, chunk):
-            a_unit_indices = list(range(batch_size*u, batch_size*(u+1), 2))
-            b_unit_indices = list(range(batch_size*u+1, batch_size*(u+1), 2))
-            half_batch_offset = int(batch_size*u/2)
+            batch_indexes = list(range(batch_size*u, batch_size*(u+1), 2))
+            batch_offset = batch_size*u
 
-            a[half_batch_offset : half_batch_offset + len(a_unit_indices)] = calc_request.term_vector[np.take(a_indices, a_unit_indices, axis=0)]
-            b[half_batch_offset : half_batch_offset + len(b_unit_indices)] = calc_request.term_vector[np.take(b_indices, b_unit_indices, axis=0)]
+            a[batch_offset : batch_offset + len(batch_indexes)] = calc_request.term_vector[np.take(a_indices, batch_indexes, axis=0)]
+            b[batch_offset : batch_offset + len(batch_indexes)] = calc_request.term_vector[np.take(b_indices, batch_indexes, axis=0)]
+
         if rest_index > 0:
-            a_rest_indices = list(range(len(comb_indices)-rest_index, len(comb_indices), 2))
-            b_rest_indices = list(range(len(comb_indices)-rest_index+1, len(comb_indices), 2))
-            a[-rest_index+len(b_rest_indices):] = calc_request.term_vector[np.take(a_indices, a_rest_indices, axis=0)]
-            b[-rest_index+len(a_rest_indices):] = calc_request.term_vector[np.take(b_indices, b_rest_indices, axis=0)]
+            a_rest_indices = a_indices[-rest_index:]
+            b_rest_indices = b_indices[-rest_index:]
+            
+            if len(a_rest_indices)> 0:
+                a[-rest_index:] = calc_request.term_vector[a_rest_indices]
+            if len(b_rest_indices)> 0:
+                b[-rest_index:] = calc_request.term_vector[b_rest_indices]
 
-        c = np.bitwise_xor(a ,b).sum(axis=-1)
-        d = np.bitwise_and(a ,b).sum(axis=-1)
+        c = np.bitwise_xor(a, b).sum(axis=-1)
+        d = np.bitwise_and(a, b).sum(axis=-1)
 
         distances = c / (c+d)
 

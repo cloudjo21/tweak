@@ -1,5 +1,4 @@
 import numpy as np
-import scipy.spatial.distance as distance
 
 from itertools import combinations
 from pydantic import BaseModel, validator
@@ -33,13 +32,31 @@ class BigramJaccardDistanceCalc:
     def __call__(self, calc_request: JaccardDistanceCalcRequest):
         distances = []
 
-        # make index combinations
-        comb_indices = list(combinations(range(0, calc_request.num_rows), 2))
-        # calc_jaccard_distance_naive
-        for i, j in comb_indices:
-            # list of numpy.float64
-            distances.append(distance.jaccard(calc_request.term_vector[i], calc_request.term_vector[j]))
+        # constraint to minimum number of rows
+        num_rows = min(calc_request.term_vector.shape[0], calc_request.num_rows)
 
-        calc_response = JaccardDistanceCalcResponse(distances=distances)
+        # make index combinations
+        comb_indices = list(combinations(range(0, num_rows), 2))
+
+        # TODO if we met the longer and wider matrix (e.g., (300~, 5000~)), 
+        # use the following codes to avoid memory re-allocation
+        # import scipy.spatial.distance as distance
+        # # calc_jaccard_distance_naive
+        # for i, j in comb_indices:
+        #     # list of numpy.float64
+        #     distances.append(distance.jaccard(calc_request.term_vector[i], calc_request.term_vector[j]))
+        # calc_response = JaccardDistanceCalcResponse(distances=distances)
+
+        # calc_jaccard_distance_naive
+        vecs_a, vecs_b = [], []
+        for i, j in comb_indices:
+            vecs_a.append(calc_request.term_vector[i])
+            vecs_b.append(calc_request.term_vector[j])
+        a = np.vstack(vecs_a).astype(np.int8)
+        b = np.vstack(vecs_b).astype(np.int8)
+        c = np.bitwise_xor(a ,b).sum(axis=-1)
+        d = np.bitwise_and(a ,b).sum(axis=-1)
+        distances = c / (c+d)
+        calc_response = JaccardDistanceCalcResponse(distances=distances.tolist())
 
         return calc_response

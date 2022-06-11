@@ -1,6 +1,9 @@
 from setuptools import setup, find_packages
 import setuptools
 
+import warnings
+warnings.filterwarnings("ignore")
+
 # Disable version normalization performed by setuptools.setup()
 try:
     # Try the approach of using sic(), added in setuptools 46.1.0

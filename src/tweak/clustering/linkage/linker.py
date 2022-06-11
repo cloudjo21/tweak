@@ -1,5 +1,3 @@
-import numpy as np
-
 from collections import deque
 from copy import deepcopy
 from typing import List
@@ -19,13 +17,14 @@ class LinkageLinker:
         linkages: List[Linkage] = []
 
         # build_and_cut
-        target_num = len(linkage_matrix)
+        target_num = len(linkage_matrix) + 1
         lk_cid = target_num 
         for lk in linkage_matrix:
-            linkages.append(Linkage(id=int(lk[0]), nn_id=int(lk[1]), dist=lk[2], n_clu=int(lk[3]), cid=lk_cid))
-            lk_cid += 1
-            if lk[2] > self.hac_dist_threshold:
+            if lk[2] < self.hac_dist_threshold:
+                linkages.append(Linkage(id=int(lk[0]), nn_id=int(lk[1]), dist=lk[2], n_clu=int(lk[3]), cid=lk_cid))
+            else:
                 break
+            lk_cid += 1
 
         cid_deq = deque(deepcopy(linkages))
         while len(cid_deq) > 0:

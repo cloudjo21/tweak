@@ -46,6 +46,7 @@ class _HAC:
             doc_ids = [v[0].id, v[0].nn_id]
             if len(v) > 1:
                 doc_ids.extend([l.id for l in v[1:] if l.id < target_num])
+                doc_ids.extend([l.nn_id for l in v[1:] if l.nn_id < target_num])
             docid_clusters.append(doc_ids)
 
         return docid_clusters
@@ -59,6 +60,8 @@ class _HAC:
             if len(v) > 1:
                 doc_ids.extend([l.id for l in v[1:] if l.id < target_num])
                 dists.extend([l.dist for l in v[1:]if l.id < target_num])
+                doc_ids.extend([l.nn_id for l in v[1:] if l.nn_id < target_num])
+                dists.extend([l.dist for l in v[1:]if l.nn_id < target_num])
             docid_clusters.append(doc_ids)
             dist_clusters.append(dists)
 

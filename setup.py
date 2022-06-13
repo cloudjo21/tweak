@@ -24,7 +24,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="tweak",
-    version=sic("0.0.3-beta1"),
+    version=sic("0.0.3-beta2"),
     url="https://bitbucket.org/peterleecodiit/tweak.git",
     packages=find_packages("src"),
     package_dir={"tweak": "src/tweak"},

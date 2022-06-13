@@ -20,16 +20,25 @@ regex_normalize_nums = re.compile('\d+')
 
 def preprocess_for_title(text):
     text = regex_normalize_nums.sub('0', text)
-    text = ''.join(list(filter(lambda c: c.isdigit() or is_hangul(c) or c == ' ', text)))
+    text = ' '.join(list(filter(lambda c: c.isdigit() or is_hangul(c) or c == ' ', text.split(' '))))
     text = re.sub('  ', ' ', text)
     return text
+
+
+def _preprocess_for_titlenugget(text):
+    text = regex_normalize_nums.sub('0', text)
+    text = ' '.join(list(filter(lambda c: c.isdigit() or is_hangul(c) or c == ' ', text.split(' '))))
+    text = re.sub('  ', ' ', text)
+    return text.split(' ')
+
 
 max_row = 70
 linkage_method = 'average'
 # dist_threshold = 0.777
 # dist_threshold = 0.822
 # dist_threshold = 0.85
-dist_threshold = 0.92
+dist_threshold = 0.90
+# dist_threshold = 0.92
 # dist_threshold = 0.94
 use_bigrams_also = True
 
@@ -40,38 +49,54 @@ white_ptags = {
     #'bigram': ['V', 'N', 'M', 'SL', 'SH', 'SN'],
 }
 
+import nltk
 import os
 import pathlib
 
 print(str(pathlib.Path(os.curdir).absolute()))
 
 print(os.curdir)
-json_path = 'tweak/test/tweak/resources/reserve_keyword_NETFLIX_dashi-nnc_beta6.json'
+# json_path = 'tweak/test/tweak/resources/reserve_keyword_NETFLIX_dashi-nnc_beta6.json'
+json_path = 'tweak/test/tweak/resources/keyword_오징어_search.json'
 with open(json_path, mode='r') as io:
     es_result = json.loads(io.read())
 # es_result = json.load()
 
-print(json.dumps(es_result, indent=4))
+# print(json.dumps(es_result, indent=4))
 
 
 nugget = Nugget()
 distance_calc = BigramJaccardDistanceCalc()
 
 
-titles = [e['_source']['title'] for e in es_result["es_result"]['hits']['hits']]
+corpus_bigrams = []
+corpus_unigrams = []
+es_doc_ids = []
+titles = []
+
+es_result_no_titlenugget = [e for e in filter(lambda e: 'titlenugget' not in e['_source'], es_result["es_result"]['hits']['hits'])]
+titles = [e['_source']['title'] for e in filter(lambda e: 'titlenugget' not in e['_source'], es_result["es_result"]['hits']['hits'])]
+# titles = [e['_source']['title'] for e in es_result["es_result"]['hits']['hits']]
 # titles = [normalize_digit(t) for t in titles]
 titles = [preprocess_for_title(t) for t in titles]
-es_doc_ids = [e['_id'] for e in es_result["es_result"]['hits']['hits']]
+es_doc_ids = [e['_id'] for e in es_result_no_titlenugget]
 # nuggets = list(nugget(titles))
 # title_nuggets = [[t[3] for t in e['tokens']] for e in nuggets]
 
 # print(title_nuggets[0])
 # print(title_nuggets[-1])
 
-corpus_bigrams = []
-corpus_unigrams = []
 bigrams, unigrams = nugget.bigrams_also_selective_tags(texts=titles, white_tags_dict=white_ptags)
 # bigrams, unigrams = nugget.bigrams_also(texts=titles, white_tags=white_ptags, result_format=NuggetFilterResultFormat.NUGGET_B_E_LEX)
+
+
+titles = [e['_source']['titlenugget'] for e in filter(lambda e: e['_id'] not in es_doc_ids, es_result['es_result']['hits']['hits'])]
+# titles = [e['_source']['titlenugget'] for e in es_result["es_result"]['hits']['hits']]
+for title in titles:
+    title_normed = _preprocess_for_titlenugget(title)
+    unigrams.append(list(set(title_normed)))
+    bigrams.append(nltk.bigrams(title_normed))
+
 
 for sent in bigrams:
     corpus_bigrams.append(' '.join(map('_'.join, sent)))
@@ -85,6 +110,9 @@ for us, bs in zip(corpus_unigrams, corpus_bigrams):
         corpus.append(us + ' ' + bs)
     else:
         corpus.append(bs)
+
+corpus = sorted(corpus)
+print('\n'.join(corpus))
 
 vectorizer = CountVectorizer()
 

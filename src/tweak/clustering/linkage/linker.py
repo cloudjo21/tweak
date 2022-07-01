@@ -2,6 +2,7 @@ from collections import deque
 from copy import deepcopy
 from typing import List
 
+from tweak import LOGGER
 from tweak.clustering.linkage import Linkage
 
 
@@ -26,7 +27,7 @@ class LinkageLinker:
                 break
             lk_cid += 1
         
-        # print('\n'.join(list(map(lambda l: f"id={l.id}, nn_id={l.nn_id}, dist={l.dist}, cid={l.cid} n_clu={l.n_clu}", linkages))))
+        LOGGER.debug('\n'.join(list(map(lambda l: f"id={l.id}, nn_id={l.nn_id}, dist={l.dist}, cid={l.cid} n_clu={l.n_clu}", linkages))))
 
         cid_deq = deque(deepcopy(linkages))
         while len(cid_deq) > 0:
@@ -50,6 +51,6 @@ class LinkageLinker:
                 else:
                     id2lineage[linkage_item.cid].append(linkage_item)
         
-        # print('\n'.join(map(lambda p: f"{p[0]}: {p[1]}", id2lineage.items())))
+        LOGGER.debug('\n'.join(map(lambda p: f"{p[0]}: {p[1]}", id2lineage.items())))
 
         return id2lineage

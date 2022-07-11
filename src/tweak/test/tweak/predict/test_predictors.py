@@ -143,3 +143,34 @@ class PredictorsTest(unittest.TestCase):
         #     lambda a, b: a == b,
         #     sim
         # ).item() == 1.
+
+
+    def test_doc_similarity(self):
+        extractor_config = {
+            "predict_model_type": "auto",
+            "predict_tokenizer_type": "auto",
+            "predict_output_type": "last_hidden_with_attention_mask",
+            "model_config": {
+                "model_path": "user/jhjeon/mart/plm/models/jhgan%2Fko-sroberta-multitask",
+                "model_name": "jhgan/ko-sroberta-multitask"
+            },
+            "tokenizer_config": {
+                "model_path": "user/jhjeon/mart/plm/models/jhgan%2Fko-sroberta-multitask",
+                "path": "user/jhjeon/mart/plm/models/jhgan%2Fko-sroberta-multitask",
+                "max_length": 128
+            },
+            "checker_config_path": "/Users/jhjeon/IdeaProjects/paani/resources/checker_config.json"
+        }
+        pred_config = PredictorConfig.parse_obj(extractor_config)
+        predictor = PredictorFactory.create(pred_config)
+        doc = ["오늘날 미디어를 이용하는 시청자들의 시청 형태",
+               "시청 형태 및 시청 환경의 변화로 인해 정보통신망을 통하여",
+               "정보통신망을 통하여 동영상 콘텐츠를 제공하는 서비스 (OTT: Over The Top)",
+               "(OTT: Over The Top)가 급격하게 성장하고 있음."]
+
+        model_output, attention_mask = predictor.predict(doc)
+        input_mask_expanded = attention_mask.unsqueeze(-1).expand(model_output.size()).float()
+        mean = torch.sum(model_output * input_mask_expanded, 1) / torch.clamp(input_mask_expanded.sum(1), min=1e-9)
+        embeddings = mean.mean(dim=0).unsqueeze(0)
+
+        assert embeddings.data.shape == (1, 768)

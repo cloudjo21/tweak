@@ -1,5 +1,4 @@
 import torch
-
 from transformers import (
     AutoConfig,
     AutoModel,
@@ -7,7 +6,6 @@ from transformers import (
 )
 from transformers.file_utils import ModelOutput
 from transformers.modeling_outputs import (
-    SequenceClassifierOutput,
     TokenClassifierOutput,
 )
 from transformers.tokenization_utils_base import BatchEncoding
@@ -26,11 +24,11 @@ class HFAutoModel(PredictableModel):
         # self.model_dir = f"{config.model_path}/{config.checkpoint}/{config.task_name}" if config.checkpoint else config.model_path
 
         self.auto_config = AutoConfig.from_pretrained(
-            config.model_path, # finetuning_task=config.task_name
+            config.model_path,  # finetuning_task=config.task_name
         )
         # self.pt_model_name = auto_config._name_or_path
 
-        
+
     def infer(self) -> ModelOutput:
         pass
 
@@ -46,11 +44,13 @@ class HFAutoModelForPreTrained(HFAutoModel):
             config=self.auto_config
         )
         self.model.eval()
-    
+
     def infer(self, encoded: BatchEncoding):
         with torch.no_grad():
             predictions = self.model(
-                input_ids=encoded["input_ids"]
+                input_ids=encoded['input_ids'],
+                token_type_ids=encoded['token_type_ids'],
+                attention_mask=encoded['attention_mask'],
             )
             return predictions
 
@@ -71,7 +71,9 @@ class HFAutoModelForTokenClassification(HFAutoModel):
 
     def infer(self, encoded: BatchEncoding) -> TokenClassifierOutput:
         with torch.no_grad():
-            predictions: TokenClassifierOutput = self.model(
-                input_ids=encoded["input_ids"]
+            predictions = self.model(
+                input_ids=encoded['input_ids'],
+                token_type_ids=encoded['token_type_ids'],
+                attention_mask=encoded['attention_mask'],
             )
             return predictions

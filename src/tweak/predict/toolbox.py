@@ -69,13 +69,13 @@ class PredictionToolboxPackerForPreTrainedModel:
         # TODO provide child class of PredictionBuild by factory
         if predictor_config.predict_model_type in ['auto']:
             prediction_build_cls = PredictionBuildForLastHiddenState
+        elif predictor_config.predict_model_type in ['auto'] and \
+                predictor_config.predict_output_type == 'last_hidden_with_attention_mask':
+            prediction_build_cls = PredictionBuildForLastHiddenStateWithAttentionMask
         elif predictor_config.predict_model_type in ['torchscript'] and predictor_config.zero_padding:
             prediction_build_cls = PredictionBuildForTorchScriptLastHiddenStateWithZero
         elif predictor_config.predict_model_type in ['torchscript'] and not predictor_config.zero_padding:
             prediction_build_cls = PredictionBuildForTorchScriptLastHiddenState
-
-        if predictor_config.predict_output_type == 'last_hidden_with_attention_mask':
-            prediction_build_cls = PredictionBuildForLastHiddenStateWithAttentionMask
 
         return PredictionToolboxForPreTrainedModel(model, tokenizer, prediction_build_cls)
     

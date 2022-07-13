@@ -151,15 +151,15 @@ class PredictorsTest(unittest.TestCase):
             "predict_tokenizer_type": "auto",
             "predict_output_type": "last_hidden_with_attention_mask",
             "model_config": {
-                "model_path": "user/jhjeon/mart/plm/models/jhgan%2Fko-sroberta-multitask",
+                "model_path": "user/nauts/mart/plm/models/jhgan%2Fko-sroberta-multitask",
                 "model_name": "jhgan/ko-sroberta-multitask"
             },
             "tokenizer_config": {
-                "model_path": "user/jhjeon/mart/plm/models/jhgan%2Fko-sroberta-multitask",
+                "model_path": "user/nauts/mart/plm/models/jhgan%2Fko-sroberta-multitask",
                 "path": "user/jhjeon/mart/plm/models/jhgan%2Fko-sroberta-multitask",
                 "max_length": 128
             },
-            "checker_config_path": "/Users/jhjeon/IdeaProjects/paani/resources/checker_config.json"
+            "checker_config_path": f"{NAUTS_LOCAL_ROOT}/user/nauts/paani/resources/checker_config.json"
         }
         pred_config = PredictorConfig.parse_obj(extractor_config)
         predictor = PredictorFactory.create(pred_config)

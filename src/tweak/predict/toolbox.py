@@ -1,5 +1,4 @@
 import pickle
-
 from dataclasses import dataclass
 
 from tweak.predict.builds import (
@@ -7,6 +6,7 @@ from tweak.predict.builds import (
     PredictionBuildForLastHiddenState,
     PredictionBuildForTorchScriptLastHiddenState,
     PredictionBuildForTorchScriptLastHiddenStateWithZero,
+    PredictionBuildForLastHiddenStateWithAttentionMask,
 )
 from tweak.predict.models.factory import ModelsFactory
 from tweak.predict.predictor import PredictorConfig
@@ -37,7 +37,7 @@ class PredictionToolboxPackerForTokenClassification:
         label_list_path = f"{predictor_config.model_config.model_path}/label_list.pickle"
         with open(label_list_path, "rb") as lf:
             label_list = pickle.load(lf)
-        
+
         # TODO provide child class of PredictionBuild by factory
         prediction_build_cls = PredictionBuildForTokenTypeWord
 
@@ -67,7 +67,10 @@ class PredictionToolboxPackerForPreTrainedModel:
         )
 
         # TODO provide child class of PredictionBuild by factory
-        if predictor_config.predict_model_type in ['auto']:
+        if predictor_config.predict_model_type in ['auto'] and \
+                predictor_config.predict_output_type == 'last_hidden_with_attention_mask':
+            prediction_build_cls = PredictionBuildForLastHiddenStateWithAttentionMask
+        elif predictor_config.predict_model_type in ['auto']:
             prediction_build_cls = PredictionBuildForLastHiddenState
         elif predictor_config.predict_model_type in ['torchscript'] and predictor_config.zero_padding:
             prediction_build_cls = PredictionBuildForTorchScriptLastHiddenStateWithZero

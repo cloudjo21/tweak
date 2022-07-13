@@ -23,6 +23,12 @@ class PredictionBuildForLastHiddenState(PredictionBuild):
         return predictions.last_hidden_state
 
 
+class PredictionBuildForLastHiddenStateWithAttentionMask(PredictionBuild):
+
+    def __call__(self, encoded, predictions):
+        return predictions.last_hidden_state, encoded['attention_mask']
+
+
 class PredictionBuildForTorchScriptLastHiddenState(PredictionBuild):
 
     def __call__(self, encoded, predictions):
@@ -66,5 +72,5 @@ class PredictionBuildForTokenTypeWord(PredictionBuild):
             labels = [label_list[lid] for lid in label_ids]
 
             pred_result.append(list(zip(labels, nugget_tokens[i])))
-        
+
         return pred_result

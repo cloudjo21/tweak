@@ -9,8 +9,8 @@ from termcolor import colored
 from tqdm import tqdm
 from typing import List, Tuple, Dict, Union, Any
 
-from ner.utils.constants import PAD_IDX
-from ner.utils.logger import init_logging_handler_for_klass
+from tunip.constants import PAD_IDX
+from tunip.logger import init_logging_handler_for_klass
 
 
 class Embedding(nn.Embedding):

@@ -1,0 +1,3 @@
+
+class NotSupportedTaskException(Exception):
+    pass

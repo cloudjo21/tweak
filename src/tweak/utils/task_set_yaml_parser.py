@@ -3,9 +3,11 @@ from transformers.training_args import TrainingArguments
 from tunip.config import Config
 from tunip.env import NAUTS_LOCAL_ROOT
 from tunip.path_utils import default_local_user_dir
-from tunip.snapshot_util import snapshot_now
-from tunip.task.task_set import InputColumn, InputColumnType, Task, TaskSet, TaskType
+from tunip.snapshot_utils import snapshot_now
 from tunip.yaml_loader import YamlLoader
+
+from tweak.task.pretraining_task_set import InverseClozeTask
+from tweak.task.task_set import InputColumn, InputColumnType, Task, TaskSet, TaskType
 
 
 class NoInputColumnsException(Exception):
@@ -55,6 +57,8 @@ class TaskSetYamlParser(YamlLoader):
         # TODO if 'snapshot_dt' is given, then we would support to resume training in the future ...
         run_session = task_set_dict.get("snapshot_dt") or snapshot_now()
         pretrained_model_name = task_set_dict["pretrained_model_name"]
+        label_names = task_set_dict.get("label_names", ["labels"])
+        # label_names = ["labels"]
 
         model_output_dir = self._get_output_dir_with_snapshot(
             service_repo_dir=service_repo_dir,
@@ -85,6 +89,7 @@ class TaskSetYamlParser(YamlLoader):
             weight_decay=task_set_dict.get("weight_decay") or 0,
             seed=task_set_dict.get("seed") or 42,
             local_rank=task_set_dict.get("local_rank") or -1,
+            label_names=label_names,
         )
 
         new_task_list = []
@@ -93,16 +98,32 @@ class TaskSetYamlParser(YamlLoader):
                 key not in self.REQUIRED_ATTR_TASK_SET_FOR_TRAINING_ARGS
             ):
                 name, task = key, item
-                new_task = Task(
-                    task_name=name,
-                    task_type=TaskType[task["task_type"].upper()],
-                    dataset_name=task["dataset_name"],
-                    dataset_path=task["dataset_path"],
-                    input_columns=self._get_input_columns(task),
-                    label_column_name=task["label_column_name"],
-                    pretrained_model_name=pretrained_model_name,
-                    max_length=task.get("max_length") or 32,
-                )
+                if task["task_type"].upper() == 'INVERSE_CLOZE_TASK':
+                    new_task = InverseClozeTask(
+                        task_name=name,
+                        task_type=TaskType[task["task_type"].upper()],
+                        dataset_name=task["dataset_name"],
+                        dataset_path=task["dataset_path"],
+                        input_columns=self._get_input_columns(task),
+                        label_column_name=task.get("label_column_name") or None,
+                        label_names=task.get('label_names') or None,
+                        pretrained_model_name=pretrained_model_name,
+                        max_length=task.get("max_length") or 32
+                    )
+                else:
+                    new_task = Task(
+                        task_name=name,
+                        task_type=TaskType[task["task_type"].upper()],
+                        dataset_name=task["dataset_name"],
+                        dataset_path=task["dataset_path"],
+                        input_columns=self._get_input_columns(task),
+                        label_column_name=task.get("label_column_name") or None,
+                        label_names=task.get('label_names') or None,
+                        pretrained_model_name=pretrained_model_name,
+                        max_length=task.get("max_length") or 32,
+                        source_bio_from_dataset=task.get('source_bio_from_dataset') or False,
+                        problem_type=task.get('problem_type') or None
+                    )
                 new_task_list.append(new_task)
 
         new_task_set = TaskSet(

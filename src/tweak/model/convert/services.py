@@ -2,7 +2,11 @@ import urllib.parse
 
 from tunip.path.mart import MartTokenizerPath
 
-from tweak.model.convert import TorchPretrainedModelConverter, TorchModelForTokenClassificationModelConverter
+from tweak.model.convert import (
+    DEFAULT_PT_MODEL_NAME,
+    TorchPretrainedModelConverter,
+    TorchModelForTokenClassificationModelConverter
+)
 from tweak.model.convert.runtime_path import RuntimePathProviderFactory
 
 

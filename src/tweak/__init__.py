@@ -5,5 +5,6 @@ from .utils import *
 from .orjson_utils import *
 
 from tunip.logger import init_logging_handler
+from .torch2torchscript_for_pretraining import *
 
 LOGGER = init_logging_handler(name="tweak", level=logging.DEBUG)

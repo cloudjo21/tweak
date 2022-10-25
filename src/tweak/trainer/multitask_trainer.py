@@ -233,7 +233,7 @@ class MultitaskTrainer(Trainer):
             )
 
             output = self._compute_single_metrics(
-                task_name, metric_key_prefix, output.predictions, output.label_ids
+                task_name, metric_key_prefix, output
             )
 
             self.logger.info({task_name: output.metrics})

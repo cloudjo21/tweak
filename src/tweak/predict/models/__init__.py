@@ -2,7 +2,7 @@ from abc import ABC
 from pydantic import BaseModel, validator
 from typing import Optional
 
-from tweak.orjson_utils import *
+from tunip.orjson_utils import *
 
 
 class ModelConfig(BaseModel):

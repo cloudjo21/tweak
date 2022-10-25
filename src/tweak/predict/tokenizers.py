@@ -41,16 +41,14 @@ class NuggetTokenizer(Tokenizer):
         assert isinstance(text_or_tokens, list) and not isinstance(text_or_tokens[0], list)
         nugget_tokens = self.nugget(text_or_tokens)
         if self.allow_pos_tags:
-            tokens = self.nugget.filter(
-                nuggets, white_tags=self.allow_pos_tags, result_format=NuggetFilterResultFormat.B_E_LEX
+            result_tokens = self.nugget.filter(
+                nugget_tokens, white_tags=self.allow_pos_tags, result_format=NuggetFilterResultFormat.B_E_LEX
             )
         else:
-            nugget_tokens = [
-                [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in result_tokens
+            result_tokens = [
+                [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in nugget_tokens
             ]
-            tokens = [[e[2] for e in ent] for ent in nugget_tokens]
-        # [[start, end, surface], ...]
-        return BatchEncoding(data={"nugget_tokens": [nugget_tokens]})
+        return BatchEncoding(data={"nugget_tokens": [result_tokens]})
 
 
 # auto tokenzier
@@ -113,18 +111,16 @@ class NuggetHFAutoTokenizer(Tokenizer):
 
     def tokenize(self, text_or_tokens) -> BatchEncoding:
         assert isinstance(text_or_tokens, list) and not isinstance(text_or_tokens[0], list)
-        result_tokens = self.nugget(text_or_tokens)
-
+        nugget_tokens = self.nugget(text_or_tokens)
         if self.allow_pos_tags:
-            tokens = self.nugget.filter(
-                nuggets, white_tags=self.allow_pos_tags, result_format=NuggetFilterResultFormat.B_E_LEX
+            result_tokens = self.nugget.filter(
+                nugget_tokens, white_tags=self.allow_pos_tags, result_format=NuggetFilterResultFormat.B_E_LEX
             )
         else:
-            nugget_tokens = [
-                [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in result_tokens
+            result_tokens = [
+                [[e[0], e[1], e[3]] for e in ent["tokens"]] for ent in nugget_tokens
             ]
-            tokens = [[e[2] for e in ent] for ent in nugget_tokens]
-
+        tokens = [[e[2] for e in ent] for ent in result_tokens]
         encoded = self.tokenizer.batch_encode_plus(
             tokens,
             max_length=self.max_length,
@@ -135,7 +131,7 @@ class NuggetHFAutoTokenizer(Tokenizer):
             return_offsets_mapping=True,
             return_special_tokens_mask=True,
         )
-        encoded["nugget_tokens"] = nugget_tokens
+        encoded["nugget_tokens"] = result_tokens
         return encoded
 
 

@@ -1,0 +1,13 @@
+faiss-cpu==1.8.0
+transformers==4.25.1
+tritonclient[http]
+fastcluster
+pytorch_metric_learning
+onnx==1.14
+onnxruntime==1.15.1
+onnxmltools==1.11.2
+skl2onnx==1.15.0
+xgboost==1.7.5
+protobuf==4.21.12
+evaluate==0.4.1
+torch==2.1.1+cu118

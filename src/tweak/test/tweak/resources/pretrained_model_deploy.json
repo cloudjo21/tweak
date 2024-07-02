@@ -1,0 +1,20 @@
+{
+    "service_tasks": [
+        {
+            "model_name": "monologg/koelectra-small-v3-discriminator",
+            "predictor_config": {
+                "predict_tokenizer_type": "auto",
+                "predict_model_type": "auto",
+                "predict_model_config": {
+                    "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator",
+                    "model_name": "monologg/koelectra-small-v3-discriminator"
+                },
+                "tokenizer_config": {
+                    "model_path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator",
+                    "path": "/user/nauts/mart/plm/models/monologg%2Fkoelectra-small-v3-discriminator/vocab",
+                    "max_length": 128
+                }
+            }
+        }
+    ] 
+}

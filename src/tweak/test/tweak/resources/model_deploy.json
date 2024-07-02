@@ -1,0 +1,23 @@
+{
+    "service_tasks": [
+        {
+            "domain": "wiki_dev",
+            "task_name": "ner",
+            "predictor_config": {
+                "predict_tokenizer_type": "nugget_auto",
+                "predict_model_type": "auto",
+                "predict_model_config": {
+                    "model_path": "/user/nauts/domains/wiki_dev/20211020_104537_425173/model/ner",
+                    "task_name": "ner",
+                    "task_type": "TOKEN_CLASSIFICATION",
+                    "checkpoint": "checkpoint-55200"
+                },
+                "tokenizer_config": {
+                    "model_path": "/user/nauts/domains/wiki_dev/20211020_104537_425173/model/ner",
+                    "task_name": "ner",
+                    "max_length": 128
+                }
+            }
+        }
+    ] 
+}

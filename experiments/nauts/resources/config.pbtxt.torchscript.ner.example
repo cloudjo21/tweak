@@ -1,0 +1,26 @@
+platform: "pytorch_libtorch"
+max_batch_size: 8
+input [
+  {
+    name: "input_ids__0"
+    data_type: TYPE_INT32
+    dims: [ 128 ]
+  },
+  {
+    name: "attention_mask__1"
+    data_type: TYPE_INT32
+    dims: [ 128 ]
+  },
+  {
+    name: "token_type_ids__2"
+    data_type: TYPE_INT32
+    dims: [ 128 ]
+  }
+]
+output [
+  {
+    name: "logits__0"
+    data_type: TYPE_FP32
+    dims: [ 128, 19 ]
+  }
+]

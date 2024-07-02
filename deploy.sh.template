@@ -1,0 +1,25 @@
+#!/bin/bash
+
+export PKG_NAME=tweak
+export PY_VERSION_SYMBOL=$1
+export OLD_PY_VERSION_SYMBOL=py38
+
+
+if [[ ${PY_VERSION_SYMBOL} = "py311" ]]
+    then
+    cp setup.envs/setup.${PY_VERSION_SYMBOL}.py setup.py
+
+    pip install torch==2.1.1+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+    python setup.py sdist upload -r internal
+
+    cp setup.envs/setup.${PY_VERSION_SYMBOL}.py setup.py
+
+    echo "${PKG_NAME}+${PY_VERSION_SYMBOL} deployment completed!"
+else
+    cp setup.envs/setup.${OLD_PY_VERSION_SYMBOL}.py setup.py
+
+    pip install torch==2.1.1+cu118 -f https://download.pytorch.org/whl/torch_stable.html
+    python setup.py sdist upload -r internal
+
+    echo "${PKG_NAME}+${OLD_PY_VERSION_SYMBOL} deployment completed!"
+fi

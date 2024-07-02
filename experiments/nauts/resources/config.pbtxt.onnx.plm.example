@@ -1,0 +1,26 @@
+platform: "onnxruntime_onnx"
+max_batch_size: 8
+input [
+  {
+    name: "input_ids"
+    data_type: TYPE_INT64
+    dims: [ 128 ]
+  },
+  {
+    name: "attention_mask"
+    data_type: TYPE_INT64
+    dims: [ 128 ]
+  },
+  {
+    name: "token_type_ids"
+    data_type: TYPE_INT64
+    dims: [ 128 ]
+  }
+]
+output [
+  {
+    name: "output_logits"
+    data_type: TYPE_FP32
+    dims: [ -1, 256 ]
+  }
+]

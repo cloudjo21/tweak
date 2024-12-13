@@ -1,5 +1,5 @@
 from copy import deepcopy
-from datasets import load_dataset, set_caching_enabled
+from datasets import load_dataset, load_from_disk, set_caching_enabled
 from torch.utils.data.dataset import Dataset
 from typing import Dict
 
@@ -21,14 +21,15 @@ set_caching_enabled(False)
 class TaskSpecificDataset:
     def __init__(self, task: Task):
         self.task = task
-        self.dataset = load_dataset(
-            # path=task.dataset_name,
-            # data_dir=task.dataset_path,
-            path=task.dataset_name,
-            data_dir=task.dataset_path,
-            download_mode="force_redownload",
-            # TODO support options download_mode="reuse_cache_if_exists" to Task
-        )
+#        self.dataset = load_dataset(
+#            # path=task.dataset_name,
+#            # data_dir=task.dataset_path,
+#            path=task.dataset_name,
+#            data_dir=task.dataset_path,
+#            download_mode="force_redownload",
+#            # TODO support options download_mode="reuse_cache_if_exists" to Task
+#        )
+        self.dataset = load_from_disk(task.dataset_path)
         self.dataset.cleanup_cache_files()
 
     @property

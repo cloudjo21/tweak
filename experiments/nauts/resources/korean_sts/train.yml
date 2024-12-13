@@ -1,0 +1,23 @@
+TASK_SET:
+  service_repo_dir: /mnt/d/temp
+  user_name: ed
+  domain_name: korean_sts
+  pretrained_model_name: jhgan/ko-sroberta-multitask
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 16
+  num_train_epochs: 1
+  eval_strategy: steps
+  eval_steps: 100
+  save_strategy: steps
+  save_steps: 100
+  kor_nli:
+    task_type: SEQUENCE_CLASSIFICATION
+    dataset_name: kor_nli
+    dataset_path: /mnt/d/temp/user/ed/mart/kor_nli
+    input_columns:
+      - name: premise
+        type: TEXT
+      - name: hypothesis 
+        type: TEXT
+    label_column_name: label
+    max_length: 512

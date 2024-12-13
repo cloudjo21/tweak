@@ -140,6 +140,7 @@ dmypy.json
 
 venv37/
 **/*nohup.out
+**/*nohup
 **/**/*.lock
 data/**
 ner/out/**

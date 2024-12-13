@@ -32,6 +32,7 @@ class TaskSetYamlParser(YamlLoader):
         "evaluation_strategy",
         "save_strategy",
         "save_steps",
+        "eval_strategy",
         "eval_steps",
         "eval_delay",
         "logging_steps",

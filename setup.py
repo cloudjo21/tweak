@@ -32,7 +32,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="tweak",
-    version=sic("0.2.0"),
+    version=sic("0.2.1"),
     url="https://github.com/cloudjo21/tweak.git",
     packages=find_packages("src"),
     package_dir={"tweak": "src/tweak"},

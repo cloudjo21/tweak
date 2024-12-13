@@ -38,7 +38,7 @@ setup(
     package_dir={"tweak": "src/tweak"},
     python_requires=">=3.11.6",
     long_description=open("README.md").read(),
-    install_requires=required,
+    # install_requires=required,
     # normalize_version=False,
     dependency_links=[
         'https://download.pytorch.org/whl/torch',

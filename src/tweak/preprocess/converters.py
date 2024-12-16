@@ -238,7 +238,8 @@ class NextTokenConverter(TokenizerBasedConverter):
         # if not self.label2id:
         #     raise NeedToLabelizedException()
 
-        input_column = self.task.get_input_column_by(InputColumnType.TEXT, column_name='text')
+        input_column = self.task.get_input_column_by(InputColumnType.TEXT)
+        # input_column = self.task.get_input_column_by(InputColumnType.TEXT, column_name='text')
         label_column_name = self.task.label_column_name
         # label_names = self.task.label_names
 

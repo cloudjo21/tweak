@@ -110,8 +110,8 @@ class LabelBuilderFactory:
         elif task_type == TaskType.SEQUENCE_CLASSIFICATION:
             return SequenceClassificationLabelBuilder(label_column_name, task.problem_type)
         elif task_type == TaskType.CAUSAL_LM:
-            return CausalLMLabelBuilder(label_column_name)
+            return CausalLMLabelBuilder(label_column_name, task.pretrained_model_name)
         elif task_type == TaskType.SEQ2SEQ_LM:
-            return Seq2SeqLMLabelBuilder(label_column_name)
+            return Seq2SeqLMLabelBuilder(label_column_name, task.pretrained_model_name)
         else:
             raise ValueError(f"TaskType:{task_type} is not supported!")

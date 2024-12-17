@@ -43,7 +43,8 @@ class TaskSetYamlParser(YamlLoader):
         "local_rank",
         "label_smoothing_factor",
         "warmup_ratio",
-        "warmup_steps"
+        "warmup_steps",
+        "gradient_checkpointing",
     ]
 
     def __init__(self, yaml_file: str, config: Config):
@@ -91,7 +92,7 @@ class TaskSetYamlParser(YamlLoader):
             num_train_epochs=task_set_dict.get("num_train_epochs") or 3,
             # use if evaluation_strategy is 'steps'
             eval_steps=task_set_dict.get("eval_steps") or 500,
-            eval_delay=task_set_dict.get("eval_delay") or 5,
+            eval_delay=task_set_dict.get("eval_delay") or 0,
             save_steps=task_set_dict.get("save_steps") or 1500,
             logging_steps=task_set_dict.get("logging_steps") or 100,
             save_total_limit=task_set_dict.get("save_total_limit") or 3,
@@ -105,6 +106,7 @@ class TaskSetYamlParser(YamlLoader):
             label_smoothing_factor=task_set_dict.get("label_smoothing_factor") or 0.0,
             warmup_ratio=task_set_dict.get("warmup_ratio") or 0,
             warmup_steps=task_set_dict.get("warmup_steps") or 0,
+            gradient_checkpointing=task_set_dict.get("gradient_checkpointing") or False,
             optim=task_set_dict.get('optim') or 'adamw_hf',
         )
 

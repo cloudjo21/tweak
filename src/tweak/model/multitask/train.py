@@ -84,7 +84,7 @@ trainer = MultitaskTrainer(
 )
 
 trainer.train()
-trainer.save_model()
+# trainer.save_model()
 # since transformers==4.7.x ?
 # trainer.save_state()
 # TODO multitask_model.tokenizer.save_vocabulary(task_set.training_args.output_dir)

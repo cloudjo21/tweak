@@ -1,0 +1,38 @@
+설명: |md
+# 모델 학습
+- Multitask Trainer
+  - 하나 이상의 downstream task 동시 SFT 지원
+    - token/sequence classification, causal/seq2seq lm, regression, inverse cloze task(*)
+  - Resource builder [resource_builder](../src/tweak/dataset/resource_builder.py)
+    - Dataset builder
+    - Converters [converters](../src/tweak/preprocess/converters.py)
+      - convert example to model input for speicific downstream task
+      - do tokenizing, alignment to model input, and labelizing
+      - support embedding column types
+        - encoder/decoder-input embeddings
+    - Metric buider [metric_builder](../src/tweak/metrics/task2metric.py)
+      - downstream task별 metric 지원 (../src/tweak/metrics/metric_computer.py)
+# 모델 추론
+- Predictor/PredictorConfig
+    - 추론할 모델 선택에 필요한 여러 옵션을 하나의 설정과 하나의 객체로
+      - PLM/SFTM, local/remote
+      - model-runtime-types
+        - vanilla pytorch model: auto, triton: onnx, torchscript: torchscript
+      - downstream-model-types
+      - tokenizer-types
+        - HF tokenizer: auto, external tokenizer: nugget
+      - model output types
+        - model-output/model-encoding-vector
+        - custom prediction output types (../src/tweak/predict/toolbox.py)
+            - last_hidden.mean_pooling, last_hidden.global_mean_pooling, ...
+      - model/tokenizer config
+      - device
+# 모델 변환
+- support two output model-runtimes 
+- support options between whole model or encoder model
+- PLM/SFTM
+  - SFTM
+    - onnx (../src/tweak/torch2onnx.py), torchscript (../src/tweak/torch2torchscript.py)
+  - PLM
+    - onnx (../src/tweak/torch2onnx_for_pretraining.py), torchscript (../src/tweak/torch2torchscript_for_pretraining.py)
+|

@@ -35,4 +35,12 @@
     - onnx (../src/tweak/torch2onnx.py), torchscript (../src/tweak/torch2torchscript.py)
   - PLM
     - onnx (../src/tweak/torch2onnx_for_pretraining.py), torchscript (../src/tweak/torch2torchscript_for_pretraining.py)
+# 벡터 인덱싱
+- support three types of vector index
+  - arrow, parquet, elasticsearch
+    - (../src/tweak/write/arrow_record_vector_writer.py)
+    - (../src/tweak/write/parquet_record_vector_writer.py)
+    - (../src/tweak/write/search_index_vector_writer.py)
+- write vector index while fetching spark dataframe
+  - (../src/tweak/vector/fetch/vector_fetcher.py)
 |

@@ -116,7 +116,7 @@ class VectorIndexBuilder:
         local_snapshot_cleaner = SnapshotCleaner(self.service_config, paths_left=3)
         local_snapshot_cleaner.clean(str(vector_index_root_dir_path), force_fs="LOCAL")
 
-        if upload_service is True:
+        if self.upload_service is True:
             if self.service_config.has_dfs and file_service:
                 file_service.mkdirs(vector_index_dir_path)
                 payload = local_file_service.load_binary(vector_index_filepath)

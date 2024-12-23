@@ -40,8 +40,8 @@ class ParquetRecordVectorWriter(VectorWriter):
             self.sink = pa.OSFile(self.vectors_arrow_path, "wb")
             self.file_writer = pa.ipc.new_file(self.sink, self.schema)
         elif service_config.has_hdfs_fs or service_config.has_gcs_fs:
-            self.out_stream = self.file_service.pa_fs.open_output_stream(self.vectors_arrow_path)
-            self.file_writer = pq.ParquetWriter(self.out_stream, self.schema)
+            self.sink = self.file_service.pa_fs.open_output_stream(self.vectors_arrow_path)
+            self.file_writer = pq.ParquetWriter(self.sink, self.schema)
         else:
             raise Exception(f"Not supported file system: {service_config.filesystem}")
 
@@ -75,7 +75,7 @@ class ParquetRecordVectorWriter(VectorWriter):
 
     def close(self):
         self.file_writer.close()
-        self.out_stream.close()
+        self.sink.close()
 
         if self.build_id_mapping:
             # build vector id mapping

@@ -17,6 +17,9 @@ class ArrowRecordVectorWriteSchemaInvalidateException(Exception):
 
 class ArrowVectorBatch(BaseModel, VectorBatch):
     batch: pa.RecordBatch
+    model_config = {
+        "arbitrary_types_allowed": True
+    }
 
 
 class ArrowRecordVectorWriter(VectorWriter):

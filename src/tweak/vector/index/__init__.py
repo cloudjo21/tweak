@@ -20,11 +20,12 @@ from tweak.vector import VectorLoader
 
 class VectorIndexBuilder:
 
-    def __init__(self, service_config, source_type, d_size, index_type="flat_inner_product"):
+    def __init__(self, service_config, source_type, d_size, index_type="flat_inner_product", upload_service=True):
         self.service_config = service_config
         self.source_type = source_type
         self.d_size = d_size
         self.index_type = index_type
+        self.upload_service = upload_service
 
     def __call__(self, latest_vectors_root_path: str, id_field_name: str):
         """ download vectors(parquet files), transform vectors to arrow files, build indexes with arrow files, and upload them
@@ -115,31 +116,32 @@ class VectorIndexBuilder:
         local_snapshot_cleaner = SnapshotCleaner(self.service_config, paths_left=3)
         local_snapshot_cleaner.clean(str(vector_index_root_dir_path), force_fs="LOCAL")
 
-        if self.service_config.has_dfs and file_service:
-            file_service.mkdirs(vector_index_dir_path)
-            payload = local_file_service.load_binary(vector_index_filepath)
-            file_service.write_binary(vector_index_filepath, payload)
-
-            snapshot_cleaner = SnapshotCleaner(self.service_config, paths_left=3)
-            snapshot_cleaner.clean(str(vector_index_root_dir_path))
-
-        mart_did2vid_path = MartVectorIndexDocumentDid2vidPath(
-            user_name=self.service_config.username,
-            source_type=self.source_type,
-            index_type=self.index_type,
-            snapshot_dt=snapshot_dt
-        )
-        mart_vid2did_path = MartVectorIndexDocumentVid2didPath(
-            user_name=self.service_config.username,
-            source_type=self.source_type,
-            index_type=self.index_type,
-            snapshot_dt=snapshot_dt
-        )
-
-        file_service.mkdirs(str(mart_did2vid_path))
-        file_service.write_binary(f"{str(mart_did2vid_path)}/item2vec_id.pkl", local_file_service.load_binary(f"{str(mart_did2vid_path)}/item2vec_id.pkl"))
-        # file_service.copy_files(warehouse_did2vid_path, str(mart_did2vid_path))
-
-        file_service.mkdirs(str(mart_vid2did_path))
-        file_service.write_binary(f"{str(mart_vid2did_path)}/vec2item_id.pkl", local_file_service.load_binary(f"{str(mart_vid2did_path)}/vec2item_id.pkl"))
-        # file_service.copy_files(warehouse_vid2did_path, str(mart_vid2did_path))
+        if upload_service is True:
+            if self.service_config.has_dfs and file_service:
+                file_service.mkdirs(vector_index_dir_path)
+                payload = local_file_service.load_binary(vector_index_filepath)
+                file_service.write_binary(vector_index_filepath, payload)
+    
+                snapshot_cleaner = SnapshotCleaner(self.service_config, paths_left=3)
+                snapshot_cleaner.clean(str(vector_index_root_dir_path))
+    
+            mart_did2vid_path = MartVectorIndexDocumentDid2vidPath(
+                user_name=self.service_config.username,
+                source_type=self.source_type,
+                index_type=self.index_type,
+                snapshot_dt=snapshot_dt
+            )
+            mart_vid2did_path = MartVectorIndexDocumentVid2didPath(
+                user_name=self.service_config.username,
+                source_type=self.source_type,
+                index_type=self.index_type,
+                snapshot_dt=snapshot_dt
+            )
+    
+            file_service.mkdirs(str(mart_did2vid_path))
+            file_service.write_binary(f"{str(mart_did2vid_path)}/item2vec_id.pkl", local_file_service.load_binary(f"{str(mart_did2vid_path)}/item2vec_id.pkl"))
+            # file_service.copy_files(warehouse_did2vid_path, str(mart_did2vid_path))
+    
+            file_service.mkdirs(str(mart_vid2did_path))
+            file_service.write_binary(f"{str(mart_vid2did_path)}/vec2item_id.pkl", local_file_service.load_binary(f"{str(mart_vid2did_path)}/vec2item_id.pkl"))
+            # file_service.copy_files(warehouse_vid2did_path, str(mart_vid2did_path))

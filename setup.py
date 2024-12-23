@@ -32,7 +32,7 @@ except ImportError:
 
 setup(
     name="tweak",
-    version=sic("0.2.2"),
+    version=sic("0.2.3"),
     url="https://github.com/cloudjo21/tweak.git",
     packages=find_packages("src"),
     package_dir={"tweak": "src/tweak"},

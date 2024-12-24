@@ -10,6 +10,10 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 
 ## Converting torch model to onnx model
 
+> [!NOTE]
+> 🚨 ONNX Opset Version: We are using **opset version 14** for model conversion and compatibility.
+
+
 ### token classification model for onnx
 
 ```bash

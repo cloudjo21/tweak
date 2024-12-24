@@ -97,7 +97,7 @@ class TorchModelConverter:
             f=runtime_model_path,
             export_params=True,
             do_constant_folding=False,
-            opset_version=11,
+            opset_version=14,
             input_names=input_names,
             output_names=['output_logits'],
             dynamic_axes=dynamic_axes,

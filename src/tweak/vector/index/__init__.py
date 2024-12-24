@@ -27,7 +27,7 @@ class VectorIndexBuilder:
         self.index_type = index_type
         self.upload_service = upload_service
 
-    def __call__(self, latest_vectors_root_path: str, id_field_name: str):
+    def __call__(self, latest_vectors_root_path: str, id_field_name: str) -> str:
         """ download vectors(parquet files), transform vectors to arrow files, build indexes with arrow files, and upload them
         /user/[username]/mart/vector_index/document/[source_type]/[index_type]/vector-[i].index
         /user/[username]/mart/vector_index/document/[source_type]/[index_type]/did2vid/item2vec_id.pkl
@@ -35,6 +35,8 @@ class VectorIndexBuilder:
 
         Args:
             latest_vectors_root_path (str): /user/[username]/warehouse/vectors/[task_name]/[phase_type]
+        Return:
+            vector index snapshot path
         """
         vectors_path = f"{latest_vectors_root_path}/vectors"
 
@@ -145,3 +147,5 @@ class VectorIndexBuilder:
             file_service.mkdirs(str(mart_vid2did_path))
             file_service.write_binary(f"{str(mart_vid2did_path)}/vec2item_id.pkl", local_file_service.load_binary(f"{str(mart_vid2did_path)}/vec2item_id.pkl"))
             # file_service.copy_files(warehouse_vid2did_path, str(mart_vid2did_path))
+
+        return vector_index_dir_path

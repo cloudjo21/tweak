@@ -19,7 +19,7 @@ class PredictorConfig(BaseModel):
     # triton/auto
     predict_model_type: str
 
-    predict_output_type: Optional[str]
+    predict_output_type: Optional[str] = None
 
     predict_model_config: Union[ModelConfig, PreTrainedModelConfig]
     tokenizer_config: TokenizerConfig

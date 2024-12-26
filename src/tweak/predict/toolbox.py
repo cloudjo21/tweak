@@ -12,10 +12,12 @@ from tweak.predict.builds import (
     PredictionBuildForTorchScriptLastHiddenStateForGlobalMeanPool,
     PredictionBuildForHuggingfaceTokenGen,
     PredictionBuildForTorchScriptTokenGen,
+    PredictionBuildForLastHiddenStateForClsToken,
     PredictionBuildForLastHiddenStateWithAttentionMask,
     PredictionBuildForLastHiddenStateWithAttentionMaskForMeanPooling,
     PredictionBuildForTorchScriptTokenTypeWord,
     PredictionBuildForTritonLastHiddenState,
+    PredictionBuildForTritonLastHiddenStateForClsToken,
     PredictionBuildForTritonLastHiddenStateForMeanPooling,
     PredictionBuildForTritonLastHiddenStateForGlobalMeanPooling,
     PredictionBuildForTritonTokenTypeWord,
@@ -160,6 +162,8 @@ class PredictionToolboxPackerForPreTrainedModel:
             prediction_build_cls = PredictionBuildForLastHiddenStateWithAttentionMask
         elif predictor_config.predict_model_type in ['auto'] and predictor_config.predict_output_type == 'last_hidden_with_attention_mask.mean_pooling':
             prediction_build_cls = PredictionBuildForLastHiddenStateWithAttentionMaskForMeanPooling
+        elif predictor_config.predict_model_type in ['auto'] and predictor_config.predict_output_type == 'last_hidden.cls_token':
+            prediction_build_cls = PredictionBuildForLastHiddenStateForClsToken
         elif predictor_config.predict_model_type in ['auto']:
             prediction_build_cls = PredictionBuildForLastHiddenState
         elif predictor_config.predict_model_type in ['torchscript'] and predictor_config.predict_output_type == 'last_hidden.global_mean_pooling':
@@ -174,6 +178,8 @@ class PredictionToolboxPackerForPreTrainedModel:
             prediction_build_cls = PredictionBuildForTritonLastHiddenStateForGlobalMeanPooling
         elif predictor_config.predict_model_type in ['triton'] and predictor_config.predict_output_type == 'last_hidden.mean_pooling':
             prediction_build_cls = PredictionBuildForTritonLastHiddenStateForMeanPooling
+        elif predictor_config.predict_model_type in ['triton'] and predictor_config.predict_output_type == 'last_hidden.cls_token':
+            prediction_build_cls = PredictionBuildForTritonLastHiddenStateForClsToken
         elif predictor_config.predict_model_type in ['triton']:
             prediction_build_cls = PredictionBuildForTritonLastHiddenState
 

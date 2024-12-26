@@ -25,6 +25,12 @@ class PredictionBuildForLastHiddenState(PredictionBuild):
         return predictions.last_hidden_state
 
 
+class PredictionBuildForLastHiddenStateForClsToken(PredictionBuild):
+
+    def __call__(self, encoded, predictions):
+        return predictions.last_hidden_state[:, 0, :]
+
+
 class PredictionBuildForLastHiddenStateWithAttentionMask(PredictionBuild):
 
     def __call__(self, encoded, predictions):
@@ -43,9 +49,20 @@ class PredictionBuildForTorchScriptLastHiddenState(PredictionBuild):
         return torch.tensor(predictions[0])
 
 
+class PredictionBuildForTorchScriptLastHiddenStateForClsToken(PredictionBuild):
+
+    def __call__(self, encoded, predictions):
+        return torch.tensor(predictions[0][:, 0, :])
+
+
 class PredictionBuildForTritonLastHiddenState(PredictionBuild):
     def __call__(self, encoded, predictions):
         return torch.tensor(predictions)
+
+
+class PredictionBuildForTritonLastHiddenStateForClsToken(PredictionBuild):
+    def __call__(self, encoded, predictions):
+        return torch.tensor(predictions[:, 0, :])
 
 
 class PredictionBuildForTritonLastHiddenStateForMeanPooling(PredictionBuild):

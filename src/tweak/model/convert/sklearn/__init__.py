@@ -80,10 +80,10 @@ output [
 
             model_onnx = convert_sklearn(
                 model, MODEL_NAME, [('input', FloatTensorType([None, len(model.feature_names_in_)]))], 
-                target_opset={'': 12, 'ai.onnx.ml': 2},
+                target_opset={'': 14, 'ai.onnx.ml': 2},
                 options={id(model):{'zipmap': False}}  # option to deactivate dictionary type for probability per class
             )
-            # model_onnx = convert_sklearn(model, MODEL_NAME, [('input', FloatTensorType([None, len(model.feature_names_in_)]))], target_opset={'': 12, 'ai.onnx.ml': 2})
+            # model_onnx = convert_sklearn(model, MODEL_NAME, [('input', FloatTensorType([None, len(model.feature_names_in_)]))], target_opset={'': 14, 'ai.onnx.ml': 2})
 
             with open(runtime_model_filepath, "wb") as f:
                 f.write(model_onnx.SerializeToString())

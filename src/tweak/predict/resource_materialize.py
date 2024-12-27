@@ -32,10 +32,12 @@ class ResourceMaterializer:
         dfs_downloader = DfsDownloader(service_config)
 
         # download checkpoint-*/, [task]/
-        dfs_downloader.download(path=config.model_path)
-        LOGGER.info(f"{__class__.__name__} downloaded MODEL: {config.model_path}")
+        downloaded = dfs_downloader.download(path=config.model_path)
+        if downloaded:
+            LOGGER.info(f"{__class__.__name__} downloaded MODEL: {config.model_path}")
         if config.checkpoint:
             dfs_downloader.download(path=f"{config.model_path}/../{config.checkpoint}")
         config.model_path = f"{service_config.local_prefix}{config.model_path}"
 
-        LOGGER.info(f"{__class__.__name__} downloaded model_path in local FS: {config.model_path}")
+        if downloaded:
+            LOGGER.info(f"{__class__.__name__} downloaded model_path in local FS: {config.model_path}")

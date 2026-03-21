@@ -1,0 +1,49 @@
+[project]
+name = "tweak"
+version = "0.2.4"
+description = "tweak"
+readme = "README.md"
+requires-python = ">=3.13.9"
+dependencies = [
+    "faiss-cpu>=1.9.0",
+    "transformers==4.47.1",
+    "tritonclient[http]",
+    "fastcluster",
+    "pytorch_metric_learning",
+    "onnx>=1.14",
+    "onnxruntime>=1.15.1",
+    "onnxmltools>=1.11.2",
+    "skl2onnx>=1.15.0",
+    "xgboost>=1.7.5",
+    "protobuf>=4.21.12",
+    "evaluate==0.4.1",
+    "torch>=2.3.0",
+    "tunip @ git+https://github.com/cloudjo21/tunip.git@v0.3.0",
+]
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+[tool.uv]
+override-dependencies = [
+    "pandas>=2.2.0",
+    "spacy>=3.8.0",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=1.19.1",
+    "pytest>=9.0.2",
+    "ruff>=0.15.7",
+]
